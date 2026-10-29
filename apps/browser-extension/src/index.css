@@ -1,4 +1,5 @@
 @import "@karakeep/tailwind-config/globals.css";
+@import "@karakeep/tailwind-config/keeply.css";
 
 :root {
   font-family:
@@ -52,7 +53,7 @@ body {
   font-size: 12px;
   background: radial-gradient(
     ellipse at 20% 10%,
-    rgb(16 185 129 / 0.09),
+    hsl(var(--primary) / 0.18),
     transparent 70%
   );
 }
@@ -77,13 +78,13 @@ body {
 .capture-progress {
   height: 2px;
   overflow: hidden;
-  background: rgb(16 185 129 / 0.12);
+  background: hsl(var(--primary) / 0.2);
 }
 .capture-progress span {
   display: block;
   height: 100%;
   width: 40%;
-  background: #059669;
+  background: hsl(var(--ring));
   animation: keeply-progress 1.4s ease-in-out infinite;
 }
 @keyframes keeply-progress {

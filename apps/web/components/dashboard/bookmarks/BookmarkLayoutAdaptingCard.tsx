@@ -65,8 +65,8 @@ function BottomRow({
   bookmark: ZBookmark;
 }) {
   return (
-    <div className="justify flex w-full shrink-0 justify-between text-gray-500">
-      <div className="flex items-center gap-2 overflow-hidden text-nowrap font-light">
+    <div className="justify flex w-full shrink-0 justify-between text-muted-foreground">
+      <div className="flex items-center gap-2 overflow-hidden text-nowrap text-xs">
         {footer && <>{footer}•</>}
         <Link
           href={`/dashboard/preview/${bookmark.id}`}
@@ -111,7 +111,7 @@ function OwnerIndicator({ bookmark }: { bookmark: ZBookmark }) {
   if (!owner) return null;
 
   return (
-    <div className="absolute right-2 top-2 z-40 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+    <div className="absolute right-2 top-2 z-40 opacity-0 transition-opacity duration-200 group-focus-within:opacity-100 group-hover:opacity-100">
       <BookmarkOwnerIcon ownerName={owner.name} ownerAvatar={owner.image} />
     </div>
   );
@@ -197,7 +197,7 @@ function DragHandle({
       draggable
       onDragStart={handleDragStart}
       className={cn(
-        "absolute z-40 hidden cursor-grab rounded bg-background/70 p-0.5 opacity-0 shadow-sm transition-opacity duration-200 group-hover:opacity-100 [@media(pointer:fine)]:block",
+        "absolute z-40 hidden cursor-grab rounded bg-background/70 p-0.5 opacity-0 shadow-sm transition-opacity duration-200 group-focus-within:opacity-100 group-hover:opacity-100 [@media(pointer:fine)]:block",
         className,
       )}
     >
@@ -245,7 +245,7 @@ function HoverActionBar({
         inline ? "shrink-0" : "absolute right-2 top-2",
         isBulkEditEnabled
           ? "pointer-events-auto flex opacity-100"
-          : "pointer-events-none hidden opacity-0 group-hover:opacity-100 [@media(pointer:fine)]:pointer-events-auto [@media(pointer:fine)]:flex",
+          : "pointer-events-none hidden opacity-0 group-focus-within:opacity-100 group-hover:opacity-100 [@media(pointer:fine)]:pointer-events-auto [@media(pointer:fine)]:flex",
       )}
     >
       <button
@@ -330,7 +330,7 @@ function ListView({
   return (
     <div
       className={cn(
-        "group relative flex max-h-96 gap-4 overflow-hidden rounded-lg p-2",
+        "group relative flex max-h-96 gap-4 overflow-hidden rounded-[22px] p-4",
         className,
       )}
       data-bookmark-index={bookmarkIndex}
@@ -348,7 +348,7 @@ function ListView({
       <div className="flex h-full flex-1 flex-col justify-between gap-2 overflow-hidden">
         <div className="flex flex-col gap-2 overflow-hidden">
           {showTitle && title && (
-            <div className="line-clamp-2 flex-none shrink-0 overflow-hidden text-ellipsis break-words text-lg">
+            <div className="line-clamp-2 flex-none shrink-0 overflow-hidden text-ellipsis break-words text-[16px] font-semibold leading-relaxed">
               {title}
             </div>
           )}
@@ -388,15 +388,12 @@ function GridView({
     contain: "object-contain",
   });
   const note = showNotes ? bookmark.note?.trim() : undefined;
-  const img = image(
-    "grid",
-    cn("h-56 min-h-56 w-full rounded-t-lg", imgFitClass),
-  );
+  const img = image("grid", cn("h-44 min-h-44 w-full", imgFitClass));
 
   return (
     <div
       className={cn(
-        "group relative flex flex-col overflow-hidden rounded-lg",
+        "group relative flex flex-col overflow-hidden rounded-[22px]",
         className,
         fitHeight && layout != "grid" ? "max-h-96" : "h-96",
       )}
@@ -406,11 +403,11 @@ function GridView({
       <OwnerIndicator bookmark={bookmark} />
       <DragHandle bookmark={bookmark} className="left-2 top-2" />
       <HoverActionBar bookmark={bookmark} />
-      {img && <div className="h-56 w-full shrink-0 overflow-hidden">{img}</div>}
-      <div className="flex h-full flex-col justify-between gap-2 overflow-hidden p-2">
+      {img && <div className="h-44 w-full shrink-0 overflow-hidden">{img}</div>}
+      <div className="flex h-full flex-col justify-between gap-3 overflow-hidden p-5">
         <div className="grow-1 flex flex-col gap-2 overflow-hidden">
           {showTitle && title && (
-            <div className="line-clamp-2 flex-none shrink-0 overflow-hidden text-ellipsis break-words text-lg">
+            <div className="line-clamp-2 flex-none shrink-0 overflow-hidden text-ellipsis break-words text-[16px] font-semibold leading-relaxed">
               {title}
             </div>
           )}
@@ -446,7 +443,7 @@ function CompactView({
   return (
     <div
       className={cn(
-        "group relative flex flex-col overflow-hidden rounded-lg",
+        "group relative flex flex-col overflow-hidden rounded-[22px]",
         className,
         "max-h-96",
       )}
@@ -454,7 +451,7 @@ function CompactView({
     >
       <BulkEditSelectionOverlay bookmark={bookmark} />
       <OwnerIndicator bookmark={bookmark} />
-      <div className="flex h-full justify-between gap-2 overflow-hidden p-2">
+      <div className="flex h-full justify-between gap-3 overflow-hidden p-5">
         <div className="flex items-center gap-2">
           {bookmark.content.type === BookmarkTypes.LINK &&
             bookmark.content.favicon && (
@@ -479,13 +476,15 @@ function CompactView({
             </div>
           )}
           {footer && (
-            <p className="flex shrink-0 gap-2 text-gray-500">•{footer}</p>
+            <p className="flex shrink-0 gap-2 text-muted-foreground">
+              •{footer}
+            </p>
           )}
-          <p className="text-gray-500">•</p>
+          <p className="text-muted-foreground">•</p>
           <Link
             href={`/dashboard/preview/${bookmark.id}`}
             suppressHydrationWarning
-            className="shrink-0 gap-2 text-gray-500"
+            className="shrink-0 gap-2 text-muted-foreground"
           >
             <BookmarkFormattedCreatedAt createdAt={bookmark.createdAt} />
           </Link>

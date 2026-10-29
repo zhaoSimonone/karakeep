@@ -25,7 +25,7 @@ import type { ZBookmark } from "@karakeep/shared/types/bookmarks";
 import { useBookmarkListContext } from "@karakeep/shared-react/hooks/bookmark-list-context";
 
 import BookmarkCard from "./BookmarkCard";
-import EditorCard from "./EditorCard";
+import CollectionToolbar from "./CollectionToolbar";
 import UnknownCard from "./UnknownCard";
 
 function StyledBookmarkCard({
@@ -39,7 +39,7 @@ function StyledBookmarkCard({
   return (
     <Slot
       className={cn(
-        "mb-4 border border-border bg-card hover:shadow-lg hover:transition-shadow",
+        "keeply-bookmark mb-5 border border-border bg-card",
         className,
       )}
       {...props}
@@ -149,9 +149,11 @@ export default function BookmarksGrid({
   fetchNextPage = () => ({}),
   isFetchingNextPage = false,
   showEditorCard = false,
+  showCollectionHeading = false,
 }: {
   bookmarks: ZBookmark[];
   showEditorCard?: boolean;
+  showCollectionHeading?: boolean;
   hasNextPage?: boolean;
   isFetchingNextPage?: boolean;
   fetchNextPage?: () => void;
@@ -218,35 +220,25 @@ export default function BookmarksGrid({
     }
   }, [fetchNextPage, hasNextPage, isFetchingNextPage, loadMoreButtonInView]);
 
-  if (bookmarks.length == 0 && !showEditorCard) {
-    return (
-      <>
-        <NoBookmarksBanner />
-        <KeyboardShortcutsDialog
-          open={helpDialogOpen}
-          setOpen={setHelpDialogOpen}
-        />
-      </>
-    );
-  }
-
   const children = [
-    showEditorCard && (
-      <StyledBookmarkCard key={"editor"}>
-        <EditorCard />
-      </StyledBookmarkCard>
-    ),
     ...bookmarks.map((bookmark, index) => (
       <BookmarkGridItem key={bookmark.id} bookmark={bookmark} index={index} />
     )),
   ];
   return (
     <>
+      <CollectionToolbar
+        count={bookmarks.length}
+        hasMore={hasNextPage}
+        showAdd={showEditorCard}
+        isHome={showCollectionHeading}
+      />
+      {bookmarks.length === 0 && <NoBookmarksBanner />}
       {bookmarkLayoutSwitch(layout, {
         masonry: (
           <Masonry
-            className="-ml-4 flex w-auto"
-            columnClassName="pl-4"
+            className="-ml-5 flex w-auto"
+            columnClassName="pl-5"
             breakpointCols={breakpointConfig}
           >
             {children}
@@ -254,8 +246,8 @@ export default function BookmarksGrid({
         ),
         grid: (
           <Masonry
-            className="-ml-4 flex w-auto"
-            columnClassName="pl-4"
+            className="-ml-5 flex w-auto"
+            columnClassName="pl-5"
             breakpointCols={breakpointConfig}
           >
             {children}

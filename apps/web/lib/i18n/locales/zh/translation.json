@@ -1259,5 +1259,17 @@
     "deselect_all": "取消全选",
     "show_help": "显示键盘快捷键",
     "focus_search_alt": "聚焦搜索"
+  },
+  "keeply_ui": {
+    "title": "我的收藏",
+    "subtitle": "让值得留下的内容，有处可寻。",
+    "add": "收好新内容",
+    "add_description": "粘贴链接或文字，也可以直接拖入图片和 PDF。",
+    "count": "已加载 {{count}} 项",
+    "more_count": "已加载 {{count}} 项 · 继续下滑查看更多",
+    "read": "打开阅读",
+    "all": "全部内容",
+    "favorites": "星标收藏",
+    "tags": "按标签浏览"
   }
 }

@@ -30,7 +30,15 @@ interface MultiUrlImportState {
   text: string;
 }
 
-export default function EditorCard({ className }: { className?: string }) {
+export default function EditorCard({
+  className,
+  onSaved,
+  dialog = false,
+}: {
+  className?: string;
+  onSaved?: () => void;
+  dialog?: boolean;
+}) {
   const { t } = useTranslation();
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -63,6 +71,7 @@ export default function EditorCard({ className }: { className?: string }) {
         });
       }
       form.reset();
+      onSaved?.();
       // if the list layout is used, we reset the size of the editor card to the original size after submitting
       if (bookmarkLayout === "list" && inputRef?.current?.style) {
         inputRef.current.style.height = "auto";
@@ -98,7 +107,7 @@ export default function EditorCard({ className }: { className?: string }) {
 
   const onInput = (e: React.FormEvent<HTMLTextAreaElement>) => {
     // Expand the textarea to a max of half the screen size in the list layout only
-    if (bookmarkLayout === "list") {
+    if (!dialog && bookmarkLayout === "list") {
       const target = e.target as HTMLTextAreaElement;
       const maxHeight = window.innerHeight * 0.5;
       target.style.height = "auto";
@@ -189,25 +198,29 @@ export default function EditorCard({ className }: { className?: string }) {
     <Form {...form}>
       <form
         className={cn(
-          className,
           "relative flex flex-col gap-2 rounded-xl bg-card p-4",
-          cardHeight,
+          dialog ? "h-64 bg-transparent p-0" : cardHeight,
+          className,
         )}
         onSubmit={form.handleSubmit(onSubmit, onError)}
       >
-        <div className="flex justify-between">
-          <p className="text-sm">{t("editor.new_item")}</p>
-          <Kbd>⌘ + E</Kbd>
-        </div>
-        <Separator />
+        {!dialog && (
+          <div className="flex justify-between">
+            <p className="text-sm">{t("editor.new_item")}</p>
+            <Kbd>⌘ + E</Kbd>
+          </div>
+        )}
+        {!dialog && <Separator />}
         <FormItem className="flex-1">
           <FormControl>
             <Textarea
               ref={inputRef}
+              autoFocus={dialog}
+              aria-label={t("editor.placeholder_v2")}
               disabled={isPending}
               className={cn(
-                "h-full w-full border-none p-0 text-base font-light shadow-none focus-visible:ring-0 dark:bg-transparent md:text-base",
-                { "resize-none": bookmarkLayout !== "list" },
+                "h-full w-full border-none p-3 text-base shadow-none focus-visible:ring-2 focus-visible:ring-ring dark:bg-transparent md:text-base",
+                { "resize-none": dialog || bookmarkLayout !== "list" },
               )}
               placeholder={t("editor.placeholder_v2")}
               onKeyDown={(e) => {
@@ -239,7 +252,8 @@ export default function EditorCard({ className }: { className?: string }) {
           disabled={!form.formState.dirtyFields.text}
           loading={isPending}
           type="submit"
-          variant="secondary"
+          variant="default"
+          className="rounded-full"
         >
           {form.formState.dirtyFields.text
             ? demoMode

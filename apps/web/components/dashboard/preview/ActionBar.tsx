@@ -62,9 +62,10 @@ export default function ActionBar({ bookmark }: { bookmark: ZBookmark }) {
 
         <TooltipTrigger asChild>
           <Button
+            aria-label={t("actions.edit")}
             variant="ghost"
             size="none"
-            className="size-8 rounded-md"
+            className="size-9 rounded-full"
             onClick={() => {
               setEditBookmarkDialogOpen(true);
             }}
@@ -81,7 +82,10 @@ export default function ActionBar({ bookmark }: { bookmark: ZBookmark }) {
           <ActionButton
             variant="ghost"
             size="none"
-            className="size-8 rounded-md"
+            className="size-9 rounded-full"
+            aria-label={t(
+              bookmark.favourited ? "actions.unfavorite" : "actions.favorite",
+            )}
             loading={pendingFav}
             onClick={() => {
               favBookmark({
@@ -111,8 +115,11 @@ export default function ActionBar({ bookmark }: { bookmark: ZBookmark }) {
           <ActionButton
             variant="ghost"
             size="none"
+            aria-label={t(
+              bookmark.archived ? "actions.unarchive" : "actions.archive",
+            )}
             loading={pendingArchive}
-            className="size-8 rounded-md"
+            className="size-9 rounded-full"
             onClick={() => {
               archiveBookmark({
                 bookmarkId: bookmark.id,
@@ -142,9 +149,10 @@ export default function ActionBar({ bookmark }: { bookmark: ZBookmark }) {
         />
         <TooltipTrigger asChild>
           <Button
-            className="size-8 rounded-md"
+            className="size-9 rounded-full"
             variant="ghost"
             size="none"
+            aria-label={t("actions.delete")}
             onClick={() => setDeleteBookmarkDialogOpen(true)}
           >
             <Trash2 className="size-[18px]" size={18} strokeWidth={1.5} />
@@ -160,11 +168,12 @@ export default function ActionBar({ bookmark }: { bookmark: ZBookmark }) {
         hiddenActions={["select", "edit", "favorite", "archive", "delete"]}
         trigger={
           <ButtonWithTooltip
+            aria-label={t("actions.more")}
             tooltip={t("actions.more")}
             delayDuration={0}
             variant="ghost"
             size="none"
-            className="size-8 rounded-md"
+            className="size-9 rounded-full"
           >
             <MoreHorizontal className="size-[18px]" strokeWidth={1.5} />
           </ButtonWithTooltip>

@@ -132,6 +132,7 @@ export default function ViewOptions() {
       <DropdownMenuTrigger asChild>
         <ButtonWithTooltip
           tooltip={t("view_options.title")}
+          aria-label={t("view_options.title")}
           delayDuration={100}
           variant="ghost"
         >

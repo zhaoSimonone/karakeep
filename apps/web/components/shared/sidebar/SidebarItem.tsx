@@ -38,9 +38,9 @@ export default function SidebarItem({
   return (
     <li
       className={cn(
-        "relative flex justify-between rounded-lg text-sm transition-colors hover:bg-accent",
+        "relative flex justify-between rounded-2xl text-sm transition-colors hover:bg-accent",
         path == currentPath
-          ? "bg-accent/50 text-foreground"
+          ? "bg-accent font-semibold text-accent-foreground"
           : "text-muted-foreground",
         dropHighlight && "bg-accent ring-2 ring-primary",
         className,
@@ -55,8 +55,9 @@ export default function SidebarItem({
         {collapseButton}
         <Link
           href={path}
+          aria-current={path === currentPath ? "page" : undefined}
           className={cn(
-            "flex flex-1 items-center gap-x-2 rounded-[inherit] px-3 py-2",
+            "flex flex-1 items-center gap-x-3 rounded-[inherit] px-3 py-2.5",
             linkClassName,
           )}
         >

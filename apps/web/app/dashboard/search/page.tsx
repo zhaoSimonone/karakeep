@@ -5,9 +5,11 @@ import BookmarksGrid from "@/components/dashboard/bookmarks/BookmarksGrid";
 import BookmarksGridSkeleton from "@/components/dashboard/bookmarks/BookmarksGridSkeleton";
 import { useBookmarkSearch } from "@/lib/hooks/bookmark-search";
 import { useInSearchPageStore } from "@/lib/store/useInSearchPageStore";
+import { useTranslation } from "@/lib/i18n/client";
 import { useSortOrderStore } from "@/lib/store/useSortOrderStore";
 
 function SearchComp() {
+  const { t } = useTranslation();
   const { data, error, hasNextPage, fetchNextPage, isFetchingNextPage } =
     useBookmarkSearch();
 
@@ -30,7 +32,10 @@ function SearchComp() {
   }
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-5">
+      <h1 className="text-2xl font-semibold tracking-tight">
+        {t("common.search")}
+      </h1>
       {data ? (
         <BookmarksGrid
           hasNextPage={hasNextPage}

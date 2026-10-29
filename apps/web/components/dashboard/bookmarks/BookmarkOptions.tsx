@@ -549,7 +549,8 @@ export default function BookmarkOptions({
           {trigger ?? (
             <Button
               variant="ghost"
-              className="px-1 focus-visible:ring-0 has-[>svg]:px-1"
+              aria-label={t("actions.more")}
+              className="px-1 has-[>svg]:px-1"
             >
               <MoreHorizontal className="size-6" />
             </Button>

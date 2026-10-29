@@ -6,7 +6,8 @@
   "exports": {
     "./native": "./native.ts",
     "./web": "./web.ts",
-    "./globals.css": "./globals.css"
+    "./globals.css": "./globals.css",
+    "./keeply.css": "./keeply.css"
   },
   "license": "MIT",
   "scripts": {

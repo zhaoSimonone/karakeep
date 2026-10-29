@@ -35,7 +35,7 @@ export default function TagList({
               key={t.id}
               className={cn(
                 badgeVariants({ variant: "secondary" }),
-                "text-nowrap font-light text-gray-700 hover:bg-foreground hover:text-secondary dark:text-gray-400",
+                "max-w-full truncate rounded-lg px-2 py-1 text-[11px] font-normal text-muted-foreground hover:bg-accent hover:text-accent-foreground",
               )}
               href={`/dashboard/tags/${t.id}`}
             >
@@ -46,7 +46,7 @@ export default function TagList({
               key={t.id}
               className={cn(
                 badgeVariants({ variant: "secondary" }),
-                "text-nowrap font-light text-gray-700 dark:text-gray-400",
+                "max-w-full truncate rounded-lg px-2 py-1 text-[11px] font-normal text-muted-foreground",
               )}
             >
               {t.name}

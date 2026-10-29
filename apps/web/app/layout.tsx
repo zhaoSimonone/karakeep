@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 import "@karakeep/tailwind-config/globals.css";
+import "@karakeep/tailwind-config/keeply.css";
+import "./keeply.css";
 
 import type { Viewport } from "next";
 import React from "react";
@@ -13,11 +14,6 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster } from "sonner";
 
 import { clientConfig } from "@karakeep/shared/config";
-
-const inter = Inter({
-  subsets: ["latin"],
-  fallback: ["sans-serif"],
-});
 
 export const metadata: Metadata = {
   title: "Keeply · 收好",
@@ -52,15 +48,13 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
-  // Values match the `--background` token in tooling/tailwind/globals.css.
+  // Values match the `--background` token in tooling/tailwind/keeply.css.
   // These follow the OS color scheme only. An in-app theme override via
   // next-themes is not reflected here, so chrome can differ from the page
   // when a user picks a theme opposite to their system preference.
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#030303" },
+    { media: "(prefers-color-scheme: light)", color: "#faf9f5" },
+    { media: "(prefers-color-scheme: dark)", color: "#1c1b18" },
   ],
 };
 
@@ -71,6 +65,17 @@ export default async function RootLayout({
 }>) {
   const session = await getServerAuthSession();
   const userSettings = await getUserLocalSettings();
+  const translations = {
+    en: {
+      translation: (await import("@/lib/i18n/locales/en/translation.json"))
+        .default,
+    },
+    [userSettings.lang]: {
+      translation: (
+        await import(`@/lib/i18n/locales/${userSettings.lang}/translation.json`)
+      ).default,
+    },
+  };
   const isRTL = userSettings.lang === "ar";
   return (
     <html
@@ -78,12 +83,13 @@ export default async function RootLayout({
       dir={isRTL ? "rtl" : "ltr"}
       suppressHydrationWarning
     >
-      <body className={inter.className}>
+      <body>
         <NuqsAdapter>
           <Providers
             session={session}
             clientConfig={clientConfig}
-            userLocalSettings={await getUserLocalSettings()}
+            userLocalSettings={userSettings}
+            translations={translations}
           >
             {children}
             <ReactQueryDevtools initialIsOpen={false} />

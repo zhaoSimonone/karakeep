@@ -1,0 +1,96 @@
+.keeply-search {
+  box-shadow: none;
+}
+.keeply-header > div:nth-child(2) {
+  max-width: 720px;
+}
+.keeply-header > div:last-child {
+  margin-inline-start: auto;
+}
+.keeply-bookmark {
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+  box-shadow: 0 2px 4px rgb(43 36 22 / 0.025);
+}
+@media (hover: hover) {
+  .keeply-bookmark:hover {
+    border-color: hsl(var(--input));
+    box-shadow: 0 8px 24px rgb(43 36 22 / 0.07);
+    transform: translateY(-2px);
+  }
+}
+.keeply-cover {
+  background:
+    radial-gradient(
+      ellipse at 25% 20%,
+      hsl(var(--primary) / 0.18),
+      transparent 75%
+    ),
+    hsl(var(--muted));
+}
+.keeply-bookmark .prose {
+  font-size: 14px;
+  line-height: 1.75;
+  color: hsl(var(--foreground));
+}
+.keeply-bookmark .prose :is(h1, h2, h3) {
+  font-size: 17px;
+  line-height: 1.55;
+  font-weight: 600;
+  margin-block: 0 12px;
+  color: hsl(var(--foreground));
+}
+.keeply-bookmark .prose p {
+  margin-block: 8px;
+}
+.keeply-bookmark .prose blockquote {
+  margin-block: 14px;
+  border-color: hsl(var(--primary));
+  color: hsl(var(--muted-foreground));
+  font-style: normal;
+  font-weight: 400;
+}
+.keeply-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid hsl(var(--border));
+  border-radius: 999px;
+  padding: 8px 14px;
+  color: hsl(var(--muted-foreground));
+  background: hsl(var(--card));
+}
+.keeply-filter:hover {
+  background: hsl(var(--accent));
+  color: hsl(var(--foreground));
+}
+.keeply-filter-active {
+  background: hsl(var(--foreground));
+  color: hsl(var(--background));
+}
+.keeply-view-controls button {
+  border-radius: 999px;
+}
+.keeply-skip {
+  position: fixed;
+  top: -80px;
+  left: 16px;
+  z-index: 100;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+.keeply-skip:focus {
+  top: 12px;
+}
+@media (max-width: 639px) {
+  .keeply-header {
+    gap: 8px;
+  }
+  .keeply-content {
+    padding-bottom: 40px;
+  }
+}

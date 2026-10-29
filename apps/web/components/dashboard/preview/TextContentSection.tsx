@@ -29,7 +29,7 @@ export function TextContentSection({ bookmark }: { bookmark: ZBookmark }) {
           />
         </div>
       )}
-      <div className="mx-auto max-w-3xl px-4 py-4">
+      <div className="keeply-reader-text mx-auto max-w-3xl px-5 py-8 sm:px-10">
         <BookmarkMarkdownComponent>
           {bookmark as ZBookmarkTypeText}
         </BookmarkMarkdownComponent>

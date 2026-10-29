@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/lib/i18n/client";
 import { Maximize2 } from "lucide-react";
 
 import type { ZBookmark } from "@karakeep/shared/types/bookmarks";
@@ -15,8 +16,9 @@ export default function BookmarkActionBar({
   bookmark: ZBookmark;
   favouritedClassName?: string;
 }) {
+  const { t } = useTranslation();
   return (
-    <div className="flex text-gray-500">
+    <div className="flex text-muted-foreground">
       {bookmark.favourited && (
         <FavouritedActionIcon
           className={cn("m-1 size-8 rounded p-1", favouritedClassName)}
@@ -25,6 +27,7 @@ export default function BookmarkActionBar({
       )}
       <Link
         href={`/dashboard/preview/${bookmark.id}`}
+        aria-label={t("keeply_ui.read")}
         className={cn(
           buttonVariants({ variant: "ghost" }),
           "px-2 has-[>svg]:px-2",

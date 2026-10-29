@@ -33,6 +33,7 @@ export function NoteEditor({
       className="min-h-[5rem] w-full resize-y overflow-auto rounded-2xl border-border/60 bg-muted/20 p-3 text-sm text-foreground placeholder:text-muted-foreground dark:bg-input/30"
       defaultValue={bookmark.note ?? ""}
       disabled={demoMode || disabled}
+      aria-label="阅读备注"
       placeholder="留下你的想法…"
       onBlur={(e) => {
         if (e.currentTarget.value == bookmark.note) {

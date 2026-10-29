@@ -1254,5 +1254,17 @@
     "deselect_all": "Deselect all",
     "show_help": "Show keyboard shortcuts",
     "focus_search_alt": "Focus search"
+  },
+  "keeply_ui": {
+    "title": "Your collection",
+    "subtitle": "A little space for everything worth keeping.",
+    "add": "Add something good",
+    "add_description": "Paste a link or text. You can also drop images and PDFs here.",
+    "count": "{{count}} items loaded",
+    "more_count": "{{count}} items loaded · scroll for more",
+    "read": "Open reader",
+    "all": "All items",
+    "favorites": "Favorites",
+    "tags": "Browse tags"
   }
 }

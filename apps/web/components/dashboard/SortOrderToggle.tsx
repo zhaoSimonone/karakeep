@@ -39,6 +39,7 @@ export default function SortOrderToggle() {
       <DropdownMenuTrigger asChild>
         <ButtonWithTooltip
           tooltip={t("actions.sort.title")}
+          aria-label={t("actions.sort.title")}
           delayDuration={100}
           variant="ghost"
         >

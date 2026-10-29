@@ -7,5 +7,5 @@ RUN rm -rf /app/apps/web/.next /app/apps/workers/dist
 COPY --chown=node:node web-next/ /app/apps/web/.next/
 COPY --chown=node:node web-server.js /app/apps/web/server.js
 COPY --chown=node:node worker-dist/ /app/apps/workers/dist/
-ENV SERVER_VERSION=2026.10.29-keeply
+ENV SERVER_VERSION=2026.10.30-keeply-ui
 LABEL org.opencontainers.image.title="Keeply · 收好"

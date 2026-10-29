@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { Globe2 } from "lucide-react";
 import { useUserSettings } from "@/lib/userSettings";
 
 import type { ZBookmarkTypeLink } from "@karakeep/shared/types/bookmarks";
@@ -55,6 +56,7 @@ function LinkImage({
       className={className}
       alt="card banner"
       fill={true}
+      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
       src={url}
     />
   );
@@ -67,11 +69,13 @@ function LinkImage({
   } else if (imageDetails) {
     img = imgComponent(imageDetails.url, true);
   } else {
-    // No image found
-    // A dummy white pixel for when there's no image.
-    img = imgComponent(
-      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAA1JREFUGFdj+P///38ACfsD/QVDRcoAAAAASUVORK5CYII=",
-      true,
+    img = (
+      <div className="keeply-cover flex size-full flex-col items-center justify-center gap-3 text-muted-foreground">
+        <Globe2 size={28} strokeWidth={1.3} aria-hidden="true" />
+        <span className="max-w-[85%] truncate text-xs">
+          {new URL(link.url).hostname}
+        </span>
+      </div>
     );
   }
 
@@ -80,7 +84,8 @@ function LinkImage({
       href={onClickUrl}
       target={urlTarget}
       rel="noreferrer"
-      className={className}
+      className={`${className ?? ""} block`}
+      aria-label={getBookmarkTitle(bookmark) ?? new URL(link.url).hostname}
     >
       <div className="relative size-full flex-1">{img}</div>
     </Link>
@@ -100,6 +105,14 @@ export default function LinkCard({
     <BookmarkLayoutAdaptingCard
       title={<LinkTitle bookmark={bookmarkLink} />}
       footer={<FooterLinkURL url={getSourceUrl(bookmarkLink)} />}
+      fitHeight={true}
+      content={
+        bookmarkLink.content.description ? (
+          <p className="line-clamp-3 text-sm leading-relaxed text-muted-foreground">
+            {bookmarkLink.content.description}
+          </p>
+        ) : undefined
+      }
       bookmark={bookmarkLink}
       wrapTags={false}
       image={(_layout, className) => (

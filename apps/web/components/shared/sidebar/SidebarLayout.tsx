@@ -22,18 +22,24 @@ export default function SidebarLayout({
 }) {
   return (
     <div className="sm:fixed sm:inset-0 sm:overflow-hidden">
+      <a href="#main-content" className="keeply-skip">
+        跳转到内容
+      </a>
       <Header />
       <div className="flex min-h-[calc(100vh-64px)] w-full flex-col sm:h-[calc(100dvh-64px)] sm:flex-row sm:overflow-hidden">
         <ValidAccountCheck />
         <div className="hidden flex-none sm:flex">{sidebar}</div>
-        <main className="flex-1 bg-panel sm:mb-2 sm:me-2 sm:min-h-0 sm:overflow-y-auto sm:rounded-xl sm:border">
+        <main
+          id="main-content"
+          className="keeply-main min-w-0 flex-1 bg-panel sm:min-h-0 sm:overflow-y-auto sm:border-s"
+        >
           {serverConfig.demoMode && <DemoModeBanner />}
           <div className="block w-full sm:hidden">
             {mobileSidebar}
             <Separator />
           </div>
           {modal}
-          <div className="min-h-30 container p-4">
+          <div className="keeply-content min-h-30 mx-auto w-full max-w-[1800px] p-4 sm:p-7 lg:p-9">
             <ErrorBoundary fallback={<ErrorFallback />}>
               <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>
             </ErrorBoundary>

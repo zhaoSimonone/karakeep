@@ -19,6 +19,7 @@ export default async function MobileSidebar({
             key={item.name}
             logo={item.icon}
             path={item.path}
+            name={item.name}
           />
         ))}
       </ul>

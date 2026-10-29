@@ -23,11 +23,15 @@ function AssetImage({
   switch (bookmarkedAsset.assetType) {
     case "image": {
       return (
-        <Link href={`/dashboard/preview/${bookmark.id}`}>
+        <Link
+          href={`/dashboard/preview/${bookmark.id}`}
+          className="relative block size-full"
+        >
           <Image
             alt="asset"
             src={getAssetUrl(bookmarkedAsset.assetId)}
             fill={true}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             unoptimized
             className={className}
           />
@@ -49,11 +53,15 @@ function AssetImage({
         );
       }
       return (
-        <Link href={`/dashboard/preview/${bookmark.id}`}>
+        <Link
+          href={`/dashboard/preview/${bookmark.id}`}
+          className="relative block size-full"
+        >
           <Image
             alt="asset"
             src={getAssetUrl(screenshotAssetId)}
             fill={true}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             unoptimized
             className={className}
           />
@@ -84,6 +92,7 @@ export default function AssetCard({
           <FooterLinkURL url={getSourceUrl(bookmarkedAsset)} />
         )
       }
+      fitHeight={true}
       bookmark={bookmarkedAsset}
       className={className}
       bookmarkIndex={bookmarkIndex}
