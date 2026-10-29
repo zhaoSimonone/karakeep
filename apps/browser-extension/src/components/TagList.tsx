@@ -20,7 +20,7 @@ export default function TagList({ bookmarkId }: { bookmarkId: string }) {
             key={tag.id}
             variant="outline"
             className="h-7 gap-1 border-purple-200 bg-purple-50 font-medium text-purple-700 dark:border-purple-500/30 dark:bg-purple-500/10 dark:text-purple-300"
-            title="Added by AI"
+            title="AI 自动添加"
           >
             <Sparkles className="size-3" />
             {tag.name}
@@ -41,7 +41,7 @@ export default function TagList({ bookmarkId }: { bookmarkId: string }) {
           className="h-7 gap-1.5 font-normal text-muted-foreground"
         >
           <Spinner className="size-3" />
-          AI tagging…
+          AI 正在生成标签…
         </Badge>
       )}
     </>

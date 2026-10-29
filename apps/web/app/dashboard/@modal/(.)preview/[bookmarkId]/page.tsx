@@ -34,7 +34,7 @@ export default function BookmarkPreviewPage(props: {
         </DialogHeader>
       </VisuallyHidden>
       <DialogContent
-        className="h-[90%] max-w-[90%] overflow-hidden rounded-xl p-0"
+        className="h-[94dvh] w-[96vw] max-w-[1600px] overflow-hidden rounded-[24px] border-0 p-0 shadow-2xl"
         hideCloseBtn={true}
         onOpenAutoFocus={(e) => e.preventDefault()}
       >

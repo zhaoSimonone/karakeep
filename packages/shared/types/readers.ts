@@ -4,13 +4,13 @@ import { ZReaderFontFamily, zReaderFontFamilySchema } from "./users";
 
 export const READER_DEFAULTS = {
   fontSize: 18,
-  lineHeight: 1.6,
-  fontFamily: "serif" as const,
+  lineHeight: 1.85,
+  fontFamily: "sans" as const,
 } as const;
 
 export const READER_FONT_FAMILIES: Record<ZReaderFontFamily, string> = {
   serif: "ui-serif, Georgia, Cambria, serif",
-  sans: "ui-sans-serif, system-ui, sans-serif",
+  sans: 'ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif',
   mono: "ui-monospace, Menlo, Monaco, monospace",
 } as const;
 

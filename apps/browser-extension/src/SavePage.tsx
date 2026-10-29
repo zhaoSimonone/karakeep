@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { BookmarkPlus, Link2 } from "lucide-react";
 import { Navigate } from "react-router-dom";
@@ -11,25 +11,27 @@ import {
 
 import { NEW_BOOKMARK_REQUEST_KEY_NAME } from "./background/protocol";
 import { ErrorCallout } from "./components/ErrorCallout";
-import { StatusMessage } from "./components/StatusMessage";
+import type { PagePreview } from "./components/CapturePreview";
+import { CapturePreview } from "./components/CapturePreview";
 import { Button } from "./components/ui/button";
 import { Input } from "./components/ui/input";
 import { Textarea } from "./components/ui/textarea";
-import { hasHostPermission } from "./utils/permissions";
+import { saveBookmarkWithArchive } from "./utils/saveBookmark";
 import usePluginSettings from "./utils/settings";
 import {
   capturePageWithSingleFile,
   uploadSingleFileAsset,
 } from "./utils/singlefile";
-import { useTRPC } from "./utils/trpc";
 import { MessageType } from "./utils/type";
 import { isHttpUrl } from "./utils/url";
 
 export default function SavePage() {
-  const api = useTRPC();
   const { settings, isPending: isSettingsLoaded } = usePluginSettings();
+  const [preview, setPreview] = useState<PagePreview>();
   const [error, setError] = useState<string | undefined>(undefined);
   const [isCapturing, setIsCapturing] = useState(false);
+  const savingRef = useRef(false);
+  const [savedSnapshot, setSavedSnapshot] = useState(false);
   const [pendingBookmark, setPendingBookmark] =
     useState<ZNewBookmarkRequest | null>(null);
   const [hasCheckedRequest, setHasCheckedRequest] = useState(false);
@@ -42,31 +44,30 @@ export default function SavePage() {
 
   const {
     data,
-    mutate: createBookmark,
+    mutateAsync: createBookmark,
     status,
-  } = useMutation(
-    api.bookmarks.createBookmark.mutationOptions({
-      onError: (e) => {
-        setError(e.message);
-      },
-      onSuccess: async () => {
-        // After successful creation, update badge cache and notify background
-        try {
-          const [currentTab] = await chrome.tabs.query({
-            active: true,
-            lastFocusedWindow: true,
-          });
-          await chrome.runtime.sendMessage({
-            type: MessageType.BOOKMARK_REFRESH_BADGE,
-            currentTab: currentTab,
-          });
-        } catch {
-          // Badge refresh is best-effort — on Firefox Android the background
-          // script may not be reachable from the popup context.
-        }
-      },
-    }),
-  );
+  } = useMutation({
+    mutationFn: saveBookmarkWithArchive,
+    onError: (e) => {
+      setError(e.message);
+    },
+    onSuccess: async () => {
+      // After successful creation, update badge cache and notify background
+      try {
+        const [currentTab] = await chrome.tabs.query({
+          active: true,
+          lastFocusedWindow: true,
+        });
+        await chrome.runtime.sendMessage({
+          type: MessageType.BOOKMARK_REFRESH_BADGE,
+          currentTab: currentTab,
+        });
+      } catch {
+        // Badge refresh is best-effort — on Firefox Android the background
+        // script may not be reachable from the popup context.
+      }
+    },
+  });
 
   useEffect(() => {
     async function getNewBookmarkRequestFromBackgroundScriptIfAny(): Promise<ZNewBookmarkRequest | null> {
@@ -92,13 +93,13 @@ export default function SavePage() {
         await getNewBookmarkRequestFromBackgroundScriptIfAny();
       if (!newBookmarkRequest) {
         if (!currentTab?.url) {
-          setError("This tab doesn't have a link to save.");
+          setError("当前标签页没有可收藏的网址。");
           setHasCheckedRequest(true);
           return;
         }
 
         if (!isHttpUrl(currentTab.url)) {
-          setError("Only web pages (http:// and https:// links) can be saved.");
+          setError("只能收藏 http:// 或 https:// 网页，请回到文章页面后重试。");
           setHasCheckedRequest(true);
           return;
         }
@@ -111,52 +112,109 @@ export default function SavePage() {
         };
       }
 
+      setPreview({
+        title: newBookmarkRequest.title ?? currentTab?.title,
+        url:
+          newBookmarkRequest.type === BookmarkTypes.LINK
+            ? newBookmarkRequest.url
+            : undefined,
+      });
+      if (
+        newBookmarkRequest.type === BookmarkTypes.LINK &&
+        newBookmarkRequest.url === currentTab?.url &&
+        currentTab.windowId !== undefined
+      ) {
+        // Preview stays in popup memory and is never uploaded or persisted.
+        chrome.tabs
+          .captureVisibleTab(currentTab.windowId, {
+            format: "jpeg",
+            quality: 45,
+          })
+          .then(async (image) => {
+            const [visible] = await chrome.tabs.query({
+              active: true,
+              windowId: currentTab.windowId,
+            });
+            if (visible?.id === currentTab.id && visible.url === currentTab.url)
+              setPreview({
+                image,
+                title: currentTab.title,
+                url: currentTab.url,
+              });
+          })
+          .catch(() => {
+            /* Preview failure must not block saving. */
+          });
+      }
       setPendingBookmark(newBookmarkRequest);
       setHasCheckedRequest(true);
     }
 
     if (!isSettingsLoaded) return;
-    loadBookmarkRequest();
+    loadBookmarkRequest().catch(() =>
+      setError("无法读取当前标签页，请刷新原网页后重新打开扩展。"),
+    );
   }, [isSettingsLoaded]);
 
-  const saveBookmark = async (bookmark: ZNewBookmarkRequest) => {
-    let finalBookmark = bookmark;
-    // Only crawl when the bookmark target matches the active tab — context-menu
-    // saves (link/src URL) may create a bookmark for a different URL, in which
-    // case capturing the current page would attach the wrong archive.
-    if (
-      settings.useSingleFile &&
-      currentTabId !== undefined &&
-      bookmark.type === BookmarkTypes.LINK &&
-      !bookmark.precrawledArchiveId &&
-      currentTabUrl !== undefined &&
-      bookmark.url === currentTabUrl &&
-      // The `<all_urls>` host permission is optional and only granted when the
-      // user opts in to client-side crawling; it may have been revoked since.
-      (await hasHostPermission())
-    ) {
-      try {
+  const saveBookmark = async (
+    bookmark: ZNewBookmarkRequest,
+    linkOnly = false,
+  ) => {
+    if (savingRef.current) return;
+    savingRef.current = true;
+    setError(undefined);
+    try {
+      let finalBookmark = bookmark;
+      // A right-click on a different link must not attach the current page.
+      if (
+        !linkOnly &&
+        settings.useSingleFile &&
+        bookmark.type === BookmarkTypes.LINK &&
+        !bookmark.precrawledArchiveId &&
+        bookmark.url === currentTabUrl
+      ) {
+        if (currentTabId === undefined)
+          throw new Error("找不到原网页，请回到文章页面重新打开扩展。");
+        const before = await chrome.tabs.get(currentTabId);
+        if (before.url !== bookmark.url)
+          throw new Error("原网页已跳转，请重新打开扩展后收藏。");
         setIsCapturing(true);
+        // activeTab authorizes capture after a toolbar/menu/shortcut click.
+        // Requiring <all_urls> here incorrectly skips valid per-tab access.
         const html = await capturePageWithSingleFile(currentTabId, {
           includeImages: settings.singleFileIncludeImages,
+          articleOnly: settings.singleFileArticleOnly,
         });
+        if ((await chrome.tabs.get(currentTabId)).url !== bookmark.url)
+          throw new Error("抓取期间网页发生跳转，请重新打开扩展后收藏。");
         const precrawledArchiveId = await uploadSingleFileAsset(
           html,
           bookmark.title ?? undefined,
         );
         finalBookmark = { ...bookmark, precrawledArchiveId };
-      } catch (e) {
-        // Client-side crawling is best-effort — fall back to a plain bookmark
-        // so users can still save links on pages where capture is blocked.
-        console.warn("Client-side crawl failed, saving without archive:", e);
-      } finally {
-        setIsCapturing(false);
       }
+      setIsCapturing(false);
+      setSavedSnapshot(
+        finalBookmark.type === BookmarkTypes.LINK &&
+          !!finalBookmark.precrawledArchiveId,
+      );
+      await createBookmark({
+        ...finalBookmark,
+        source: finalBookmark.source || "extension",
+      });
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "保存失败，请重试。";
+      setError(
+        /fetch|NetworkError/i.test(message)
+          ? "连接服务器失败，请检查网络后重试。"
+          : /timeout|aborted/i.test(message)
+            ? "操作超时，请关闭图片保存后重试。"
+            : message,
+      );
+    } finally {
+      setIsCapturing(false);
+      savingRef.current = false;
     }
-    createBookmark({
-      ...finalBookmark,
-      source: finalBookmark.source || "extension",
-    });
   };
 
   // Auto-save when settings are loaded and we have a pending bookmark
@@ -188,32 +246,58 @@ export default function SavePage() {
   };
 
   if (error) {
-    return <ErrorCallout title="Couldn't save this page">{error}</ErrorCallout>;
+    return (
+      <div className="flex flex-col gap-3">
+        <ErrorCallout title="收藏未完成">{error}</ErrorCallout>
+        <p className="text-xs text-muted-foreground">
+          未确认正文保存成功。请保持原网页打开，刷新文章后重试；图片较多时可在设置中关闭“同时保存图片”。
+        </p>
+        {pendingBookmark && (
+          <Button onClick={() => saveBookmark(pendingBookmark)}>
+            重试保存
+          </Button>
+        )}
+        {pendingBookmark?.type === BookmarkTypes.LINK && (
+          <Button
+            variant="outline"
+            onClick={() => saveBookmark(pendingBookmark, true)}
+          >
+            仅保存链接（不含正文）
+          </Button>
+        )}
+      </div>
+    );
   }
 
-  const pendingLabel =
-    pendingBookmark?.type === BookmarkTypes.LINK
-      ? pendingBookmark.url
-      : pendingBookmark?.type === BookmarkTypes.TEXT
-        ? pendingBookmark.text
-        : pendingBookmark?.fileName;
-
   if (isCapturing) {
-    return <StatusMessage label="Capturing page…" detail={pendingLabel} />;
+    return (
+      <CapturePreview
+        preview={preview}
+        status="正在收好这篇文章…"
+        detail="正在提取并上传正文，请保持窗口打开。"
+      />
+    );
   }
 
   switch (status) {
     case "error": {
-      return (
-        <ErrorCallout title="Couldn't save this page">{error}</ErrorCallout>
-      );
+      return <ErrorCallout title="收藏失败">{error}</ErrorCallout>;
     }
     case "success": {
-      return <Navigate to={`/bookmark/${data.id}`} />;
+      return (
+        <Navigate
+          to={`/bookmark/${data.id}`}
+          state={{ savedSnapshot, preview }}
+        />
+      );
     }
     case "pending": {
       return (
-        <StatusMessage label="Saving to Karakeep…" detail={pendingLabel} />
+        <CapturePreview
+          preview={preview}
+          status="正在确认保存…"
+          detail="保存成功后，即可打开阅读。"
+        />
       );
     }
     case "idle": {
@@ -227,11 +311,11 @@ export default function SavePage() {
               handleManualSave();
             }}
           >
-            <h2 className="text-base font-semibold">Save to Karakeep</h2>
+            <h2 className="text-base font-semibold">收藏到 keeply.收好</h2>
             {pendingBookmark.type === BookmarkTypes.LINK && (
               <div className="flex flex-col gap-1.5">
                 <label htmlFor="bookmark-title" className="text-sm font-medium">
-                  Title
+                  标题
                 </label>
                 <Input
                   id="bookmark-title"
@@ -241,7 +325,7 @@ export default function SavePage() {
                       prev ? { ...prev, title: e.target.value } : prev,
                     )
                   }
-                  placeholder="Untitled"
+                  placeholder="无标题"
                 />
                 <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <Link2 className="size-3.5 shrink-0" />
@@ -251,7 +335,7 @@ export default function SavePage() {
             )}
             {pendingBookmark.type === BookmarkTypes.TEXT && (
               <div className="flex flex-col gap-1.5">
-                <span className="text-sm font-medium">Text</span>
+                <span className="text-sm font-medium">文字片段</span>
                 <p className="line-clamp-4 whitespace-pre-wrap rounded-md border bg-muted/50 px-3 py-2 text-sm text-muted-foreground">
                   {pendingBookmark.text}
                 </p>
@@ -260,7 +344,7 @@ export default function SavePage() {
             {pendingBookmark.type === BookmarkTypes.ASSET && (
               <div className="flex flex-col gap-1.5">
                 <label htmlFor="bookmark-title" className="text-sm font-medium">
-                  Title
+                  标题
                 </label>
                 <Input
                   id="bookmark-title"
@@ -270,15 +354,15 @@ export default function SavePage() {
                       prev ? { ...prev, title: e.target.value } : prev,
                     )
                   }
-                  placeholder={pendingBookmark.fileName ?? "Asset"}
+                  placeholder={pendingBookmark.fileName ?? "文件"}
                 />
               </div>
             )}
             <div className="flex flex-col gap-1.5">
               <label htmlFor="bookmark-note" className="text-sm font-medium">
-                Note{" "}
+                备注{" "}
                 <span className="font-normal text-muted-foreground">
-                  (optional)
+                  （选填）
                 </span>
               </label>
               <Textarea
@@ -289,19 +373,23 @@ export default function SavePage() {
                     prev ? { ...prev, note: e.target.value } : prev,
                   )
                 }
-                placeholder="Why are you saving this?"
+                placeholder="记录收藏原因或备注"
                 className="h-20 resize-none"
               />
             </div>
             <Button type="submit" className="w-full gap-2">
               <BookmarkPlus className="size-4" />
-              Save bookmark
+              保存收藏
             </Button>
           </form>
         );
       }
       return (
-        <StatusMessage label="Saving to Karakeep…" detail={pendingLabel} />
+        <CapturePreview
+          preview={preview}
+          status="正在确认保存…"
+          detail="保存成功后，即可打开阅读。"
+        />
       );
     }
   }

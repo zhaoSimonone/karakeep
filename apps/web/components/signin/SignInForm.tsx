@@ -26,8 +26,8 @@ export default async function SignInForm() {
       )}
       <Card className="w-full">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
-          <CardDescription>Sign in to your Karakeep account</CardDescription>
+          <CardTitle className="text-2xl font-bold">欢迎回来</CardTitle>
+          <CardDescription>登录你的 Keeply · 收好账号</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {serverConfig.demoMode && (

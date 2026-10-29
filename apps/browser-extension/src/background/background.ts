@@ -57,20 +57,20 @@ function registerContextMenus(settings: Settings) {
   removeContextMenus();
   chrome.contextMenus.create({
     id: OPEN_KARAKEEP_ID,
-    title: "Open Karakeep",
+    title: "打开 keeply.收好",
     contexts: ["action"],
   });
 
   chrome.contextMenus.create({
     id: ADD_LINK_TO_KARAKEEP_ID,
-    title: "Add to Karakeep",
+    title: "收藏到 keeply.收好",
     contexts: ["link", "page", "selection", "image"],
   });
 
   if (settings?.showCountBadge) {
     chrome.contextMenus.create({
       id: VIEW_PAGE_IN_KARAKEEP,
-      title: "View this page in Karakeep",
+      title: "在 keeply.收好中查看",
       contexts: ["action", "page"],
     });
     if (settings?.useBadgeCache) {
@@ -83,13 +83,13 @@ function registerContextMenus(settings: Settings) {
 
       chrome.contextMenus.create({
         id: CLEAR_CURRENT_CACHE_ID,
-        title: "Clear Current Page Cache",
+        title: "清除当前网页缓存",
         contexts: ["action"],
       });
 
       chrome.contextMenus.create({
         id: CLEAR_ALL_CACHE_ID,
-        title: "Clear All Cache",
+        title: "清除全部缓存",
         contexts: ["action"],
       });
     }

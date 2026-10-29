@@ -17,12 +17,12 @@ export function NoteEditor({
   const updateBookmarkMutator = useUpdateBookmark({
     onSuccess: () => {
       toast({
-        description: "The bookmark has been updated!",
+        description: "备注已保存",
       });
     },
     onError: () => {
       toast({
-        description: "Something went wrong while saving the note",
+        description: "备注保存失败，请重试",
         variant: "destructive",
       });
     },
@@ -30,10 +30,10 @@ export function NoteEditor({
 
   return (
     <Textarea
-      className="min-h-[5rem] w-full resize-y overflow-auto rounded-md bg-background p-2.5 text-sm text-foreground placeholder:text-muted-foreground dark:bg-input/30"
+      className="min-h-[5rem] w-full resize-y overflow-auto rounded-2xl border-border/60 bg-muted/20 p-3 text-sm text-foreground placeholder:text-muted-foreground dark:bg-input/30"
       defaultValue={bookmark.note ?? ""}
       disabled={demoMode || disabled}
-      placeholder="Write some notes ..."
+      placeholder="留下你的想法…"
       onBlur={(e) => {
         if (e.currentTarget.value == bookmark.note) {
           return;

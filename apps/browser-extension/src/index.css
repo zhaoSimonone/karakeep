@@ -1,1 +1,114 @@
 @import "@karakeep/tailwind-config/globals.css";
+
+:root {
+  font-family:
+    ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont,
+    "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+body {
+  -webkit-font-smoothing: antialiased;
+}
+.keeply-popup {
+  background: hsl(var(--background));
+  max-height: 520px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  border-radius: 22px;
+}
+.keeply-popup button,
+.keeply-popup a {
+  transition:
+    background-color 160ms ease,
+    color 160ms ease;
+}
+.capture-card {
+  overflow: hidden;
+  border: 1px solid hsl(var(--border) / 0.7);
+  border-radius: 22px;
+  background: hsl(var(--card));
+  box-shadow: 0 6px 22px rgb(0 0 0 / 0.055);
+  animation: keeply-enter 180ms ease-out;
+}
+.capture-thumbnail {
+  height: 112px;
+  position: relative;
+  overflow: hidden;
+  background: hsl(var(--muted) / 0.55);
+}
+.capture-thumbnail > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+.capture-placeholder {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: hsl(var(--muted-foreground));
+  font-size: 12px;
+  background: radial-gradient(
+    ellipse at 20% 10%,
+    rgb(16 185 129 / 0.09),
+    transparent 70%
+  );
+}
+.capture-domain {
+  position: absolute;
+  bottom: 10px;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 90%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  border-radius: 100px;
+  padding: 4px 9px;
+  background: hsl(var(--background) / 0.92);
+  color: hsl(var(--foreground));
+  font-size: 10px;
+  backdrop-filter: blur(8px);
+}
+.capture-progress {
+  height: 2px;
+  overflow: hidden;
+  background: rgb(16 185 129 / 0.12);
+}
+.capture-progress span {
+  display: block;
+  height: 100%;
+  width: 40%;
+  background: #059669;
+  animation: keeply-progress 1.4s ease-in-out infinite;
+}
+@keyframes keeply-progress {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(350%);
+  }
+}
+@keyframes keeply-enter {
+  from {
+    opacity: 0.6;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

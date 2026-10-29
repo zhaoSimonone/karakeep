@@ -159,9 +159,9 @@ export default function LinkContentSection({
     );
   } else if (section === "cached") {
     content = (
-      <div className="h-full w-full overflow-y-auto overflow-x-hidden px-3 sm:px-6">
+      <div className="h-full w-full overflow-y-auto overflow-x-hidden overscroll-contain px-5 sm:px-10">
         <ReaderView
-          className="mx-auto max-w-3xl"
+          className="keeply-reader-text mx-auto max-w-3xl"
           style={{
             fontFamily: READER_FONT_FAMILIES[settings.fontFamily],
             fontSize: `${settings.fontSize}px`,
@@ -188,9 +188,9 @@ export default function LinkContentSection({
 
   return (
     <div className="flex h-full w-full min-w-0 flex-col items-center overflow-hidden">
-      <div className="flex w-full items-center justify-center gap-2 border-b px-3 py-1.5">
+      <div className="flex w-full shrink-0 items-center justify-end gap-1.5 border-b border-border/40 px-4 py-2">
         <Select onValueChange={setSection} value={section}>
-          <SelectTrigger className="w-fit">
+          <SelectTrigger className="h-8 w-fit rounded-full border-0 bg-muted/50 text-xs shadow-none">
             <span className="mr-2">
               <SelectValue />
             </span>
@@ -267,17 +267,18 @@ export default function LinkContentSection({
         </Select>
         {section === "cached" && (
           <>
-            <ReaderSettingsPopover />
+            <ReaderSettingsPopover variant="ghost" />
             <Tooltip>
               <TooltipTrigger>
                 <Link
                   href={`/reader/${bookmark.id}`}
-                  className={buttonVariants({ variant: "outline" })}
+                  aria-label="全屏阅读"
+                  className={buttonVariants({ variant: "ghost", size: "icon" })}
                 >
                   <ExpandIcon className="h-4 w-4" />
                 </Link>
               </TooltipTrigger>
-              <TooltipContent side="bottom">FullScreen</TooltipContent>
+              <TooltipContent side="bottom">全屏阅读</TooltipContent>
             </Tooltip>
           </>
         )}

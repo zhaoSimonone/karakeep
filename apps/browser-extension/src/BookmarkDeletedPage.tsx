@@ -7,9 +7,9 @@ export default function BookmarkDeletedPage() {
         <Trash2 className="size-5 text-muted-foreground" />
       </div>
       <div className="flex flex-col gap-1">
-        <p className="text-base font-semibold">Bookmark deleted</p>
+        <p className="text-base font-semibold">收藏已删除</p>
         <p className="text-sm text-muted-foreground">
-          This page was removed from your Karakeep.
+          这条收藏已从 keeply.收好移除。
         </p>
       </div>
     </div>

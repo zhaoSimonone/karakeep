@@ -35,7 +35,7 @@ export function ListPathLabel({ path }: { path: ZBookmarkList[] }) {
         <span className="truncate">{list.name}</span>
         {parent && (
           <span className="truncate text-xs text-muted-foreground">
-            in {parent.name}
+            位于 {parent.name}
           </span>
         )}
       </span>
@@ -74,8 +74,8 @@ export default function BookmarkLists({ bookmarkId }: { bookmarkId: string }) {
               type="button"
               onClick={() => deleteFromList({ bookmarkId, listId: list.id })}
               className="shrink-0 rounded-md p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground"
-              aria-label={`Remove from ${list.name}`}
-              title="Remove from list"
+              aria-label={`从 ${list.name} 移除`}
+              title="移出列表"
             >
               <X className="size-3.5" />
             </button>

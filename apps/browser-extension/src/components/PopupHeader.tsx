@@ -13,15 +13,15 @@ export function PopupHeader({
   children?: React.ReactNode;
 }) {
   return (
-    <div className="-mx-4 -mt-4 flex h-14 items-center gap-1 border-b px-3">
+    <div className="-mx-3 -mt-3 flex h-10 items-center gap-1 px-2.5">
       {onBack && (
         <Button
           variant="ghost"
           size="icon"
-          className="size-8 text-muted-foreground"
+          className="size-7 text-muted-foreground"
           onClick={onBack}
-          aria-label="Back"
-          title="Back"
+          aria-label="返回"
+          title="返回"
         >
           <ArrowLeft className="size-4" />
         </Button>
@@ -44,7 +44,7 @@ export function HeaderIconButton({
     <Button
       variant="ghost"
       size="icon"
-      className="size-8 text-muted-foreground hover:text-foreground"
+      className="size-7 text-muted-foreground hover:text-foreground"
       aria-label={label}
       title={label}
       {...props}

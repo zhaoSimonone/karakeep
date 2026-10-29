@@ -68,6 +68,11 @@ const allEnv = z.object({
   OAUTH_PROVIDER_NAME: z.string().default("Custom Provider"),
   TURNSTILE_SITE_KEY: z.string().optional(),
   TURNSTILE_SECRET_KEY: z.string().optional(),
+  ANTHROPIC_API_KEY: z.string().optional(),
+  ANTHROPIC_BASE_URL: z.string().url().default("https://api.anthropic.com/v1"),
+  ANTHROPIC_REASONING_EFFORT: z
+    .enum(["low", "medium", "high", "max"])
+    .optional(),
   OPENAI_API_KEY: z.string().optional(),
   OPENAI_BASE_URL: z.string().url().optional(),
   OPENAI_PROXY_URL: z.string().url().optional(),
@@ -368,10 +373,16 @@ const serverConfigSchema = allEnv.transform((val, ctx) => {
         : undefined,
     },
     inference: {
-      isConfigured: !!val.OPENAI_API_KEY || !!val.OLLAMA_BASE_URL,
+      isConfigured:
+        !!val.ANTHROPIC_API_KEY ||
+        !!val.OPENAI_API_KEY ||
+        !!val.OLLAMA_BASE_URL,
       numWorkers: val.INFERENCE_NUM_WORKERS,
       jobTimeoutSec: val.INFERENCE_JOB_TIMEOUT_SEC,
       fetchTimeoutSec: val.INFERENCE_FETCH_TIMEOUT_SEC,
+      anthropicApiKey: val.ANTHROPIC_API_KEY,
+      anthropicBaseUrl: val.ANTHROPIC_BASE_URL,
+      anthropicReasoningEffort: val.ANTHROPIC_REASONING_EFFORT,
       openAIApiKey: val.OPENAI_API_KEY,
       openAIBaseUrl: val.OPENAI_BASE_URL,
       openAIProxyUrl: val.OPENAI_PROXY_URL,

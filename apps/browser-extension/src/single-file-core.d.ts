@@ -4,6 +4,8 @@
 
 declare module "single-file-core/single-file.js" {
   export interface SingleFileOptions {
+    networkTimeout?: number;
+    removedElementsSelector?: string;
     removeHiddenElements?: boolean;
     removeUnusedStyles?: boolean;
     removeUnusedFonts?: boolean;

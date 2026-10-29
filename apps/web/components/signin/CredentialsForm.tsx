@@ -26,8 +26,8 @@ const signInSchema = z.object({
   password: z.string(),
 });
 
-const SIGNIN_FAILED = "Incorrect email or password";
-const OAUTH_FAILED = "OAuth login failed: ";
+const SIGNIN_FAILED = "邮箱或密码不正确";
+const OAUTH_FAILED = "第三方登录失败：";
 
 export default function CredentialsForm() {
   const [signinError, setSigninError] = useState("");
@@ -59,9 +59,7 @@ export default function CredentialsForm() {
         )}
         <Alert>
           <Lock className="h-4 w-4" />
-          <AlertTitle>
-            Password authentication is currently disabled.
-          </AlertTitle>
+          <AlertTitle>当前已停用密码登录。</AlertTitle>
         </Alert>
       </div>
     );
@@ -106,13 +104,13 @@ export default function CredentialsForm() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>邮箱</FormLabel>
                 <FormControl>
                   <Input
                     type="email"
                     autoComplete="email"
                     spellCheck={false}
-                    placeholder="Enter your email"
+                    placeholder="请输入邮箱"
                     {...field}
                   />
                 </FormControl>
@@ -126,12 +124,12 @@ export default function CredentialsForm() {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <FormLabel>密码</FormLabel>
                 <FormControl>
                   <Input
                     type="password"
                     autoComplete="current-password"
-                    placeholder="Enter your password"
+                    placeholder="请输入密码"
                     {...field}
                   />
                 </FormControl>
@@ -146,7 +144,7 @@ export default function CredentialsForm() {
             loading={form.formState.isSubmitting}
             className="w-full"
           >
-            Sign In
+            登录
           </ActionButton>
 
           <div className="text-center">
@@ -154,7 +152,7 @@ export default function CredentialsForm() {
               href="/forgot-password"
               className="text-sm text-muted-foreground underline hover:text-primary"
             >
-              Forgot your password?
+              忘记密码？
             </Link>
           </div>
         </form>

@@ -20,10 +20,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Karakeep",
-  applicationName: "Karakeep",
-  description:
-    "The Bookmark Everything app. Hoard links, notes, and images and they will get automatically tagged AI.",
+  title: "Keeply · 收好",
+  applicationName: "Keeply · 收好",
+  description: "收好网页、文档与灵感，用 AI 整理，随时找回。",
   icons: {
     icon: [
       {
@@ -43,7 +42,7 @@ export const metadata: Metadata = {
   },
   appleWebApp: {
     capable: true,
-    title: "Karakeep",
+    title: "Keeply · 收好",
   },
   formatDetection: {
     telephone: false,

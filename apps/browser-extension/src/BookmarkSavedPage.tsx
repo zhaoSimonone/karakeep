@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { CircleCheck, ExternalLink, Trash2 } from "lucide-react";
-import { useNavigate, useParams } from "react-router-dom";
+import { ChevronDown, ExternalLink, Trash2 } from "lucide-react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import {
   useAutoRefreshingBookmarkQuery,
@@ -8,6 +8,10 @@ import {
 } from "@karakeep/shared-react/hooks/bookmarks";
 import { BookmarkTypes } from "@karakeep/shared/types/bookmarks";
 import { getSourceUrl } from "@karakeep/shared/utils/bookmarkUtils";
+
+import type { PagePreview } from "./components/CapturePreview";
+import { CapturePreview } from "./components/CapturePreview";
+import { getBookmarkTitle } from "@karakeep/shared/utils/bookmarkUtils";
 
 import BookmarkLists from "./components/BookmarkLists";
 import { ErrorCallout } from "./components/ErrorCallout";
@@ -41,7 +45,11 @@ function Section({
 
 export default function BookmarkSavedPage() {
   const { bookmarkId } = useParams();
+  const location = useLocation();
+  const savedSnapshot = (location.state as { savedSnapshot?: boolean } | null)
+    ?.savedSnapshot;
   const navigate = useNavigate();
+  const [expanded, setExpanded] = useState(false);
   const [error, setError] = useState("");
 
   const { mutate: deleteBookmark, isPending } = useDeleteBookmark({
@@ -72,89 +80,105 @@ export default function BookmarkSavedPage() {
   });
 
   if (!bookmarkId) {
-    return (
-      <ErrorCallout title="Bookmark not found">
-        This bookmark doesn&apos;t exist.
-      </ErrorCallout>
-    );
+    return <ErrorCallout title="未找到收藏">这条收藏不存在。</ErrorCallout>;
   }
 
   // The title is editable below, so the header names where it came from.
   const sourceUrl = bookmark ? getSourceUrl(bookmark) : null;
-  let subtitle: string | null = null;
-  if (sourceUrl) {
-    try {
-      subtitle = new URL(sourceUrl).hostname.replace(/^www\./, "");
-    } catch {
-      subtitle = sourceUrl;
-    }
-  } else if (bookmark?.content.type === BookmarkTypes.TEXT) {
-    subtitle = bookmark.content.text;
-  }
-
+  const hasSnapshot =
+    savedSnapshot ||
+    bookmark?.assets.some((a) => a.assetType === "precrawledArchive");
+  const crawlStatus =
+    bookmark?.content.type === BookmarkTypes.LINK
+      ? bookmark.content.crawlStatus
+      : undefined;
+  const preview = (location.state as { preview?: PagePreview } | null)?.preview;
+  const detail = hasSnapshot
+    ? crawlStatus === "success"
+      ? "正文已就绪，随时回来阅读。"
+      : crawlStatus === "failure"
+        ? "快照已保存，正文提取失败。请打开收藏重试。"
+        : "快照已保存，后台正在提取正文。"
+    : bookmark?.content.type === BookmarkTypes.LINK
+      ? "链接已保存，尚未确认浏览器正文快照。"
+      : "内容已保存。";
   return (
-    <div className="flex flex-col gap-5">
-      {error && (
-        <ErrorCallout title="Couldn't delete bookmark">{error}</ErrorCallout>
-      )}
-      <div className="flex items-start gap-3">
-        <CircleCheck className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-500" />
-        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-          <p className="text-base font-semibold leading-tight">Hoarded!</p>
-          <p className="truncate text-xs text-muted-foreground">
-            {subtitle ?? "Saved to Karakeep"}
-          </p>
-        </div>
-        <div className="flex shrink-0 items-center gap-1">
-          <a
-            className={cn(
-              buttonVariants({ variant: "outline", size: "sm" }),
-              "h-8 gap-1.5 px-2.5",
-            )}
-            target="_blank"
-            rel="noreferrer"
-            href={`${settings.address}/dashboard/preview/${bookmarkId}`}
-          >
-            <ExternalLink className="size-3.5" />
-            Open
-          </a>
+    <div className="flex flex-col gap-2.5">
+      {error && <ErrorCallout title="删除收藏失败">{error}</ErrorCallout>}
+      <CapturePreview
+        preview={{
+          ...preview,
+          title: bookmark
+            ? (getBookmarkTitle(bookmark) ?? preview?.title)
+            : preview?.title,
+          url: sourceUrl ?? preview?.url,
+        }}
+        status="已收好"
+        detail={detail}
+        done
+      />
+      <a
+        className={cn(
+          buttonVariants(),
+          "h-9 w-full gap-2 rounded-2xl bg-emerald-700 text-white shadow-sm hover:bg-emerald-800",
+        )}
+        target="_blank"
+        rel="noreferrer"
+        href={`${settings.address}/dashboard/preview/${bookmarkId}`}
+      >
+        打开阅读 <ExternalLink className="size-3.5" />
+      </a>
+      <button
+        className="flex items-center justify-between rounded-2xl px-2 py-1.5 text-xs text-muted-foreground hover:bg-muted"
+        aria-expanded={expanded}
+        onClick={() => setExpanded(!expanded)}
+      >
+        <span>添加标签、备注与列表</span>
+        <ChevronDown
+          className={cn(
+            "size-4 transition-transform",
+            expanded && "rotate-180",
+          )}
+        />
+      </button>
+      {expanded && (
+        <div className="flex flex-col gap-3 rounded-3xl bg-muted/30 p-2.5">
+          <Section title="标题">
+            <TitleEditor bookmarkId={bookmarkId} />
+          </Section>
+          <Section title="备注">
+            <NoteEditor bookmarkId={bookmarkId} />
+          </Section>
+          <Section title="标签">
+            <div className="flex flex-wrap items-center gap-1.5">
+              <TagList bookmarkId={bookmarkId} />
+              <TagsSelector bookmarkId={bookmarkId} />
+            </div>
+          </Section>
+          <Section title="列表">
+            <div className="flex flex-col divide-y overflow-hidden rounded-lg border bg-card">
+              {/* The picker sits above the lists so adding one doesn't push it
+              (and its open dropdown) down. */}
+              <ListsSelector bookmarkId={bookmarkId} />
+              <BookmarkLists bookmarkId={bookmarkId} />
+            </div>
+          </Section>
           <Button
             variant="ghost"
-            size="icon"
+            size="sm"
             onClick={() => deleteBookmark({ bookmarkId })}
             disabled={isPending}
-            className="size-8 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-            aria-label="Delete bookmark"
-            title="Delete bookmark"
+            className="gap-2 text-muted-foreground"
           >
             {isPending ? (
-              <Spinner className="size-4" />
+              <Spinner className="size-3.5" />
             ) : (
-              <Trash2 className="size-4" />
-            )}
+              <Trash2 className="size-3.5" />
+            )}{" "}
+            删除收藏
           </Button>
         </div>
-      </div>
-      <Section title="Title">
-        <TitleEditor bookmarkId={bookmarkId} />
-      </Section>
-      <Section title="Note">
-        <NoteEditor bookmarkId={bookmarkId} />
-      </Section>
-      <Section title="Tags">
-        <div className="flex flex-wrap items-center gap-1.5">
-          <TagList bookmarkId={bookmarkId} />
-          <TagsSelector bookmarkId={bookmarkId} />
-        </div>
-      </Section>
-      <Section title="Lists">
-        <div className="flex flex-col divide-y overflow-hidden rounded-lg border bg-card">
-          {/* The picker sits above the lists so adding one doesn't push it
-              (and its open dropdown) down. */}
-          <ListsSelector bookmarkId={bookmarkId} />
-          <BookmarkLists bookmarkId={bookmarkId} />
-        </div>
-      </Section>
+      )}
     </div>
   );
 }

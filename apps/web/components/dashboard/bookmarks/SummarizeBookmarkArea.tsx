@@ -18,12 +18,14 @@ function AISummary({
   bookmarkId,
   summary,
   readOnly = false,
+  readerMode = false,
 }: {
   bookmarkId: string;
   summary: string;
   readOnly?: boolean;
+  readerMode?: boolean;
 }) {
-  const [isExpanded, setIsExpanded] = React.useState(false);
+  const [isExpanded, setIsExpanded] = React.useState(readerMode);
   const { mutate: resummarize, isPending: isResummarizing } =
     useSummarizeBookmark({
       onError: () => {
@@ -43,13 +45,23 @@ function AISummary({
       },
     });
   return (
-    <div className="w-full p-1">
+    <div className={readerMode ? "w-full" : "w-full p-1"}>
       {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
       <div
-        className={`relative overflow-hidden rounded-lg p-4 transition-all duration-300 ease-in-out ${isExpanded ? "h-auto" : "cursor-pointer"} border border-muted-foreground/20 p-[2px]`}
+        className={
+          readerMode
+            ? "relative overflow-hidden rounded-2xl"
+            : `relative overflow-hidden rounded-lg p-4 transition-all duration-300 ease-in-out ${isExpanded ? "h-auto" : "cursor-pointer"} border border-muted-foreground/20 p-[2px]`
+        }
         onClick={() => !isExpanded && setIsExpanded(true)}
       >
-        <div className="h-full rounded-lg bg-accent p-2">
+        <div
+          className={
+            readerMode
+              ? "max-h-[32vh] overflow-y-auto rounded-2xl bg-muted/45 p-4 leading-relaxed [scrollbar-width:thin]"
+              : "h-full rounded-lg bg-accent p-2"
+          }
+        >
           <MarkdownReadonly
             className={`text-sm ${!isExpanded && "line-clamp-3"}`}
           >
@@ -64,7 +76,7 @@ function AISummary({
                     size="none"
                     spinner={<LoadingSpinner className="size-4" />}
                     className="rounded-full bg-gray-200 p-1 text-gray-600 dark:bg-muted dark:text-muted-foreground"
-                    aria-label={isExpanded ? "Collapse" : "Expand"}
+                    aria-label="重新生成摘要"
                     loading={isResummarizing}
                     onClick={() => resummarize({ bookmarkId })}
                   >
@@ -75,7 +87,7 @@ function AISummary({
                     variant="none"
                     spinner={<LoadingSpinner className="size-4" />}
                     className="rounded-full bg-gray-200 p-1 text-gray-600 dark:bg-muted dark:text-muted-foreground"
-                    aria-label={isExpanded ? "Collapse" : "Expand"}
+                    aria-label="删除摘要"
                     loading={isUpdatingBookmark}
                     onClick={() =>
                       updateBookmark({ bookmarkId, summary: null })
@@ -87,7 +99,7 @@ function AISummary({
               )}
               <button
                 className="rounded-full bg-gray-200 p-1 text-gray-600 dark:bg-muted dark:text-muted-foreground"
-                aria-label="Collapse"
+                aria-label="收起摘要"
                 onClick={() => setIsExpanded(false)}
               >
                 <ChevronUp size={16} />
@@ -103,9 +115,11 @@ function AISummary({
 export default function SummarizeBookmarkArea({
   bookmark,
   readOnly = false,
+  readerMode = false,
 }: {
   bookmark: ZBookmark;
   readOnly?: boolean;
+  readerMode?: boolean;
 }) {
   const { t } = useTranslation();
   const { mutate, isPending } = useSummarizeBookmark({
@@ -127,6 +141,7 @@ export default function SummarizeBookmarkArea({
       <AISummary
         bookmarkId={bookmark.id}
         summary={bookmark.summary}
+        readerMode={readerMode}
         readOnly={readOnly}
       />
     );

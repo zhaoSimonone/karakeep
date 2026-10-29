@@ -2,10 +2,9 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Karakeep",
-    short_name: "Karakeep",
-    description:
-      "The Bookmark Everything app. Hoard links, notes, and images and they will get automatically tagged AI.",
+    name: "Keeply · 收好",
+    short_name: "Keeply · 收好",
+    description: "收好网页、文档与灵感，用 AI 整理，随时找回。",
     background_color: "#ffffff",
     theme_color: "#ffffff",
     start_url: "/",
@@ -47,14 +46,14 @@ export default function manifest(): MetadataRoute.Manifest {
         sizes: "3840x2307",
         type: "image/png",
         form_factor: "wide",
-        label: "Karakeep desktop bookmark library",
+        label: "Keeply 收好桌面收藏库",
       },
       {
         src: "/screenshots/mobile.png",
         sizes: "692x1498",
         type: "image/png",
         form_factor: "narrow",
-        label: "Karakeep mobile bookmark library",
+        label: "Keeply 收好移动收藏库",
       },
     ],
   };

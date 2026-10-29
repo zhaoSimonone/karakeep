@@ -1,0 +1,9 @@
+# Append to the existing /etc/caddy/Caddyfile only after loopback acceptance.
+# Before enabling public traffic, point this domain's DNS to 43.156.57.17.
+keeply.facezero.online {
+    encode gzip zstd
+    request_body {
+        max_size 22MB
+    }
+    reverse_proxy 127.0.0.1:13100
+}

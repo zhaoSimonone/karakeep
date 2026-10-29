@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Laptop, LogOut, Moon, Sun, SunMoon } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -8,11 +8,6 @@ import { Button } from "./components/ui/button";
 import { Input } from "./components/ui/input";
 import { Switch } from "./components/ui/switch";
 import Spinner from "./Spinner";
-import {
-  hasHostPermission,
-  removeHostPermission,
-  requestHostPermission,
-} from "./utils/permissions";
 import usePluginSettings, {
   DEFAULT_BADGE_CACHE_EXPIRE_MS,
 } from "./utils/settings";
@@ -21,9 +16,9 @@ import { useTheme } from "./utils/ThemeProvider";
 import { useTRPC } from "./utils/trpc";
 
 const THEME_OPTIONS = [
-  { value: "light", icon: Sun, label: "Light mode" },
-  { value: "dark", icon: Moon, label: "Dark mode" },
-  { value: "system", icon: Laptop, label: "System mode" },
+  { value: "light", icon: Sun, label: "浅色模式" },
+  { value: "dark", icon: Moon, label: "深色模式" },
+  { value: "system", icon: Laptop, label: "跟随系统" },
 ] as const;
 
 export default function OptionsPage() {
@@ -34,38 +29,9 @@ export default function OptionsPage() {
   const { settings, setSettings } = usePluginSettings();
   const { setTheme, theme } = useTheme();
 
-  // `<all_urls>` is an optional host permission that the user grants when they
-  // opt in to client-side crawling. Keep the switch in sync with whether it's
-  // actually granted (it can be revoked from the browser's extension settings).
-  const [hostPermissionGranted, setHostPermissionGranted] = useState(false);
-  useEffect(() => {
-    let cancelled = false;
-    hasHostPermission().then((granted) => {
-      if (!cancelled) setHostPermissionGranted(granted);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const clientSideCrawlingEnabled =
-    settings.useSingleFile && hostPermissionGranted;
-
+  const clientSideCrawlingEnabled = settings.useSingleFile;
   const onToggleClientSideCrawling = async (checked: boolean) => {
-    if (checked) {
-      // Must run synchronously off the user gesture — don't await anything else
-      // before requesting the permission.
-      const granted = await requestHostPermission();
-      if (!granted) {
-        return;
-      }
-      setHostPermissionGranted(true);
-      await setSettings((s) => ({ ...s, useSingleFile: true }));
-    } else {
-      await setSettings((s) => ({ ...s, useSingleFile: false }));
-      await removeHostPermission();
-      setHostPermissionGranted(false);
-    }
+    await setSettings((s) => ({ ...s, useSingleFile: checked }));
   };
 
   const { data: whoami, error: whoAmIError } = useQuery(
@@ -89,11 +55,11 @@ export default function OptionsPage() {
   let accountLabel: React.ReactNode;
   if (whoAmIError) {
     if (whoAmIError.data?.code == "UNAUTHORIZED") {
-      accountLabel = "Not signed in";
+      accountLabel = "未登录";
     } else {
       accountLabel = (
         <span className="text-destructive">
-          Something went wrong: {whoAmIError.message}
+          出现错误： {whoAmIError.message}
         </span>
       );
     }
@@ -126,11 +92,11 @@ export default function OptionsPage() {
   return (
     <div className="flex flex-col gap-5">
       <PopupHeader
-        title="Settings"
+        title="设置"
         onBack={location.key !== "default" ? onBack : undefined}
       />
 
-      <SettingsSection title="Account">
+      <SettingsSection title="账号">
         <div className="flex items-center gap-3 px-3 py-2.5">
           <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-medium uppercase">
             {whoami?.email?.[0] ?? "?"}
@@ -148,15 +114,15 @@ export default function OptionsPage() {
             onClick={onLogout}
           >
             <LogOut className="size-3.5" />
-            Sign out
+            退出登录
           </Button>
         </div>
       </SettingsSection>
 
-      <SettingsSection title="Saving">
+      <SettingsSection title="收藏设置">
         <SettingsRow
-          label="Auto-save on open"
-          description="Save the page as soon as you open the extension. When off, you'll confirm first."
+          label="打开扩展时自动收藏"
+          description="打开扩展后自动保存；关闭后需点击按钮确认。保存完成前请保持弹窗打开。"
         >
           <Switch
             checked={settings.autoSave}
@@ -168,13 +134,13 @@ export default function OptionsPage() {
         <SettingsRow
           label={
             <span className="flex items-center gap-2">
-              Client-side crawling
+              保存浏览器中的全文
               <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-amber-800 dark:bg-amber-500/15 dark:text-amber-300">
-                Experimental
+                网页快照
               </span>
             </span>
           }
-          description="Capture the page in your browser, exactly as you see it. Slower, and needs permission to read pages you save."
+          description="保存当前页面已加载的正文，适合登录后或内网页面。请先展开全文并滚动到底部。"
         >
           <Switch
             checked={clientSideCrawlingEnabled}
@@ -183,8 +149,22 @@ export default function OptionsPage() {
         </SettingsRow>
         {clientSideCrawlingEnabled && (
           <SettingsRow
-            label="Include images"
-            description="Makes the upload slower."
+            label="仅保存文章正文"
+            description="去除导航、侧栏和评论区，保留正文图片。无法识别正文或发现遗漏时，可关闭后保存整页。"
+            inset
+          >
+            <Switch
+              checked={settings.singleFileArticleOnly}
+              onCheckedChange={(checked) =>
+                setSettings((s) => ({ ...s, singleFileArticleOnly: checked }))
+              }
+            />
+          </SettingsRow>
+        )}
+        {clientSideCrawlingEnabled && (
+          <SettingsRow
+            label="同时保存图片"
+            description="图片会增加上传时间和文件体积；失败时可关闭后重试。"
             inset
           >
             <Switch
@@ -197,10 +177,10 @@ export default function OptionsPage() {
         )}
       </SettingsSection>
 
-      <SettingsSection title="Toolbar badge">
+      <SettingsSection title="工具栏标记">
         <SettingsRow
-          label="Show badge on saved pages"
-          description="Mark the toolbar icon when the current page is already saved."
+          label="标记已收藏的网页"
+          description="当前网址已有收藏时，在扩展图标上显示标记。"
         >
           <Switch
             checked={settings.showCountBadge}
@@ -211,8 +191,8 @@ export default function OptionsPage() {
         </SettingsRow>
         {settings.showCountBadge && (
           <SettingsRow
-            label="Cache badge status"
-            description="Fewer requests to your server, but the badge can be stale."
+            label="缓存收藏标记"
+            description="减少服务器请求，但标记可能稍有延迟。"
           >
             <Switch
               checked={settings.useBadgeCache}
@@ -223,7 +203,7 @@ export default function OptionsPage() {
           </SettingsRow>
         )}
         {settings.showCountBadge && settings.useBadgeCache && (
-          <SettingsRow label="Cache duration" inset>
+          <SettingsRow label="缓存时长" inset>
             <div className="flex items-center gap-2">
               <Input
                 type="number"
@@ -240,24 +220,24 @@ export default function OptionsPage() {
                 }
                 className="h-8 w-20 text-right"
               />
-              <span className="text-xs text-muted-foreground">sec</span>
+              <span className="text-xs text-muted-foreground">秒</span>
             </div>
           </SettingsRow>
         )}
       </SettingsSection>
 
-      <SettingsSection title="Appearance">
+      <SettingsSection title="外观">
         <SettingsRow
           label={
             <span className="flex items-center gap-2">
               <SunMoon className="size-4 text-muted-foreground" />
-              Theme
+              主题
             </span>
           }
         >
           <div
             role="group"
-            aria-label="Theme"
+            aria-label="主题"
             className="flex items-center gap-0.5 rounded-md bg-muted p-0.5"
           >
             {THEME_OPTIONS.map(({ value, icon: Icon, label }) => (

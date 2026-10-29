@@ -69,9 +69,9 @@ export function TitleEditor({ bookmarkId }: { bookmarkId: string }) {
         value={draft ?? bookmark.title ?? ""}
         placeholder={
           getFallbackTitle(bookmark) ??
-          (isBookmarkStillCrawling(bookmark) ? "Fetching title…" : "Untitled")
+          (isBookmarkStillCrawling(bookmark) ? "正在获取标题…" : "无标题")
         }
-        aria-label="Title"
+        aria-label="标题"
         disabled={isPending}
         onChange={(e) => setDraft(e.target.value)}
         onKeyDown={(e) => {
@@ -89,10 +89,10 @@ export function TitleEditor({ bookmarkId }: { bookmarkId: string }) {
           <p className="min-w-0 flex-1 text-xs">
             {error ? (
               <span className="text-destructive">
-                {error.message || "Failed to save title"}
+                {error.message || "标题保存失败"}
               </span>
             ) : (
-              <span className="text-muted-foreground">Unsaved changes</span>
+              <span className="text-muted-foreground">有尚未保存的修改</span>
             )}
           </p>
           <Button
@@ -106,7 +106,7 @@ export function TitleEditor({ bookmarkId }: { bookmarkId: string }) {
             ) : (
               <Check className="size-3.5" />
             )}
-            {isPending ? "Saving…" : "Save title"}
+            {isPending ? "保存中…" : "保存标题"}
           </Button>
         </div>
       )}

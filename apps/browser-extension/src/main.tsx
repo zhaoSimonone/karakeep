@@ -15,7 +15,7 @@ import { Providers } from "./utils/providers.tsx";
 
 function App() {
   return (
-    <div className="w-96 p-4">
+    <div className="keeply-popup w-[316px] p-3">
       <Providers>
         <HashRouter>
           <Routes>

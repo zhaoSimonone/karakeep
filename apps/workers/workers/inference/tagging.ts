@@ -150,6 +150,12 @@ async function inferTagsFromImage(
   curatedTags?: string[],
   potentialRelevantTags?: string[],
 ): Promise<InferenceResponse | null> {
+  if (inferenceClient.supportsImageInference === false) {
+    logger.info(
+      `[inference][${jobId}] Skipping image tagging: configured provider supports text only.`,
+    );
+    return null;
+  }
   const { asset, metadata } = await readAsset({
     userId: bookmark.userId,
     assetId: bookmark.asset.assetId,

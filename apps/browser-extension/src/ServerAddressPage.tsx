@@ -60,15 +60,15 @@ export default function ServerAddressPage() {
     setHeaders(headers.filter((_, i) => i !== index));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const address = serverAddress.trim();
     if (address == "") {
-      setError("Server address is required");
+      setError("请输入服务器地址");
       return;
     }
 
     if (!isHttpUrl(address)) {
-      setError("Server address must start with http:// or https://");
+      setError("服务器地址必须以 http:// 或 https:// 开头");
       return;
     }
 
@@ -83,8 +83,11 @@ export default function ServerAddressPage() {
       {} as Record<string, string>,
     );
 
-    setSettings((s) => ({
+    await setSettings((s) => ({
       ...s,
+      ...(s.address !== address.replace(/\/$/, "")
+        ? { apiKey: "", apiKeyId: undefined }
+        : {}),
       address: address.replace(/\/$/, ""),
       customHeaders: headersObject,
     }));
@@ -97,19 +100,19 @@ export default function ServerAddressPage() {
 
   return (
     <div className="flex flex-col gap-5">
-      <PopupHeader title="Server" onBack={handleCancel} />
+      <PopupHeader title="服务器" onBack={handleCancel} />
 
       {error && <ErrorCallout>{error}</ErrorCallout>}
 
       <section className="flex flex-col gap-1.5">
         <label htmlFor="address" className="text-sm font-medium">
-          Server address
+          服务器地址
         </label>
         <Input
           id="address"
           name="address"
           value={serverAddress}
-          placeholder="https://cloud.karakeep.app"
+          placeholder="https://keeply.facezero.online"
           autoComplete="url"
           autoFocus
           onChange={(e) => {
@@ -118,15 +121,14 @@ export default function ServerAddressPage() {
           }}
         />
         <p className="text-xs text-muted-foreground">
-          Use https://cloud.karakeep.app for Karakeep Cloud, or the address of
-          your self-hosted instance.
+          默认连接 keeply.facezero.online，也可填写其他自托管服务器地址。
         </p>
       </section>
 
       <section className="flex flex-col gap-2">
         <div className="flex flex-col gap-0.5">
           <h2 className="text-sm font-medium">
-            Custom headers
+            自定义请求头
             {headers.length > 0 && (
               <span className="font-normal text-muted-foreground">
                 {" "}
@@ -135,8 +137,7 @@ export default function ServerAddressPage() {
             )}
           </h2>
           <p className="text-xs text-muted-foreground">
-            Sent with every request. Useful behind an auth proxy such as
-            Cloudflare Access.
+            随每次请求发送，适用于需要额外身份验证的代理。
           </p>
         </div>
 
@@ -160,8 +161,8 @@ export default function ServerAddressPage() {
                   size="icon"
                   onClick={() => handleRemoveHeader(index)}
                   className="size-8 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-                  aria-label={`Remove ${header.key}`}
-                  title="Remove header"
+                  aria-label={`删除 ${header.key}`}
+                  title="删除请求头"
                 >
                   <Trash2 className="size-4" />
                 </Button>
@@ -178,16 +179,16 @@ export default function ServerAddressPage() {
           }}
         >
           <Input
-            placeholder="Name"
-            aria-label="Header name"
+            placeholder="名称"
+            aria-label="请求头名称"
             value={newHeaderKey}
             onChange={(e) => setNewHeaderKey(e.target.value)}
             autoCapitalize="none"
             className="h-9 min-w-0 font-mono text-xs"
           />
           <Input
-            placeholder="Value"
-            aria-label="Header value"
+            placeholder="内容"
+            aria-label="请求头内容"
             value={newHeaderValue}
             onChange={(e) => setNewHeaderValue(e.target.value)}
             autoCapitalize="none"
@@ -199,8 +200,8 @@ export default function ServerAddressPage() {
             size="icon"
             disabled={!newHeaderKey.trim() || !newHeaderValue.trim()}
             className="size-9 shrink-0"
-            aria-label="Add header"
-            title="Add header"
+            aria-label="添加请求头"
+            title="添加请求头"
           >
             <Plus className="size-4" />
           </Button>
@@ -210,10 +211,10 @@ export default function ServerAddressPage() {
       {/* Action Buttons */}
       <div className="-mx-4 -mb-4 flex gap-2 border-t p-4">
         <Button variant="outline" onClick={handleCancel} className="flex-1">
-          Cancel
+          取消
         </Button>
         <Button onClick={handleSave} className="flex-1">
-          Save
+          保存
         </Button>
       </div>
     </div>

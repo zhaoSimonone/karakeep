@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { BookmarkTagsEditor } from "@/components/dashboard/bookmarks/BookmarkTagsEditor";
 import { FullPageSpinner } from "@/components/ui/full-page-spinner";
-import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Tooltip,
@@ -24,6 +23,8 @@ import {
   PanelRightClose,
   PanelRightOpen,
   User,
+  BookOpen,
+  X,
 } from "lucide-react";
 
 import { useTRPC } from "@karakeep/shared-react/trpc";
@@ -42,6 +43,7 @@ import AttachmentBox from "./AttachmentBox";
 import HighlightsBox from "./HighlightsBox";
 import LinkContentSection from "./LinkContentSection";
 import { NoteEditor } from "./NoteEditor";
+import styles from "./preview.module.css";
 import { TextContentSection } from "./TextContentSection";
 
 function ContentLoading() {
@@ -89,7 +91,7 @@ function BookmarkMetadata({ bookmark }: { bookmark: ZBookmark }) {
       {author && (
         <div className="flex w-fit items-center gap-2 text-sm text-muted-foreground">
           <User size={16} />
-          <span>By {author}</span>
+          <span>{author}</span>
         </div>
       )}
       {publisher && (
@@ -114,7 +116,7 @@ function PublishedDate({ datePublished }: { datePublished: Date }) {
       <TooltipTrigger asChild>
         <div className="flex w-fit items-center gap-2 text-sm text-muted-foreground">
           <CalendarDays size={16} />
-          <span>Published {fromNow}</span>
+          <span>发布于 {fromNow}</span>
         </div>
       </TooltipTrigger>
       <TooltipPortal>
@@ -127,6 +129,7 @@ function PublishedDate({ datePublished }: { datePublished: Date }) {
 export default function BookmarkPreview({
   bookmarkId,
   initialData,
+  onClose,
 }: {
   bookmarkId: string;
   initialData?: ZBookmark;
@@ -189,102 +192,170 @@ export default function BookmarkPreview({
     content
   );
 
+  let sourceHost = "";
+  try {
+    if (sourceUrl)
+      sourceHost = new URL(sourceUrl).hostname.replace(/^www\./, "");
+  } catch {
+    /* Non-URL sources stay hidden. */
+  }
   const detailsSection = (
-    <div className="flex flex-col gap-5">
-      <div className="flex flex-col gap-1">
-        <p className="line-clamp-2 text-ellipsis break-words text-lg font-medium">
-          {!title ? "Untitled" : title}
-        </p>
+    <div className={styles.details}>
+      <div className="space-y-3">
+        <h1 className="break-words text-[20px] font-semibold leading-[1.5] tracking-tight">
+          {title || "无标题"}
+        </h1>
         {sourceUrl && (
           <Link
             href={sourceUrl}
             target="_blank"
-            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+            rel="noreferrer"
+            className={styles.sourcePill}
           >
-            <ExternalLink className="size-3" />
-            <span>{t("preview.view_original")}</span>
+            <Globe className="size-3.5 shrink-0" />
+            <span className="truncate">
+              {sourceHost || t("preview.view_original")}
+            </span>
+            <ExternalLink className="size-3 shrink-0" />
           </Link>
         )}
       </div>
-      <Separator />
-      <BookmarkMetadata bookmark={bookmark} />
-      <SummarizeBookmarkArea bookmark={bookmark} readOnly={!isOwner} />
-      <Separator />
-      <div className="flex flex-col gap-1.5">
-        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          {t("common.tags")}
-        </p>
-        <BookmarkTagsEditor bookmark={bookmark} disabled={!isOwner} />
-      </div>
-      <Separator />
-      <div className="flex flex-col gap-1.5">
-        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          {t("common.note")}
-        </p>
+      <section>
+        <h2 className={styles.sectionLabel}>摘要</h2>
+        {!bookmark.summary && (
+          <p className="mb-3 text-xs leading-relaxed text-muted-foreground">
+            还没有摘要，阅读后也可以写下自己的理解。
+          </p>
+        )}
+        <SummarizeBookmarkArea
+          bookmark={bookmark}
+          readOnly={!isOwner}
+          readerMode
+        />
+      </section>
+      <section>
+        <h2 className={styles.sectionLabel}>{t("common.tags")}</h2>
+        <BookmarkTagsEditor bookmark={bookmark} disabled={!isOwner} quiet />
+      </section>
+      <section>
+        <h2 className={styles.sectionLabel}>{t("common.note")}</h2>
         <NoteEditor bookmark={bookmark} disabled={!isOwner} />
-      </div>
-      <Separator />
-      <AttachmentBox bookmark={bookmark} readOnly={!isOwner} />
-      <HighlightsBox bookmarkId={bookmark.id} readOnly={!isOwner} />
-      <Separator />
+      </section>
+      <details className="group rounded-xl border border-border/60 px-3 py-2.5 text-xs">
+        <summary className="cursor-pointer text-muted-foreground">
+          附件、划线与来源信息
+        </summary>
+        <div className="mt-4 space-y-5">
+          <BookmarkMetadata bookmark={bookmark} />
+          <AttachmentBox bookmark={bookmark} readOnly={!isOwner} />
+          <HighlightsBox bookmarkId={bookmark.id} readOnly={!isOwner} />
+        </div>
+      </details>
+    </div>
+  );
+  const actions = (
+    <div className={styles.sidebarFooter}>
+      {sourceUrl && (
+        <Link
+          href={sourceUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs hover:bg-muted"
+        >
+          <ExternalLink className="size-3.5" />
+          原文
+        </Link>
+      )}
       {isOwner && <ActionBar bookmark={bookmark} />}
     </div>
   );
-
   return (
-    <>
-      {/* Render original layout for wide screens */}
-      <div className="hidden h-full flex-col overflow-hidden bg-card lg:flex">
-        <div className="flex min-h-0 flex-1">
-          <div className="relative h-full flex-1 overflow-auto px-4 py-4">
+    <div className={styles.shell}>
+      <header className={styles.toolbar}>
+        <div className="flex min-w-0 items-center gap-3">
+          <span className="flex shrink-0 items-center gap-1.5 rounded-full bg-foreground px-2.5 py-1 text-[11px] font-medium text-background">
+            <BookOpen className="size-3" />
+            阅读
+          </span>
+          <span className="truncate text-xs text-muted-foreground">
+            {sourceHost || "keeply.收好"}
+          </span>
+        </div>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            className={`${styles.iconButton} hidden lg:inline-flex`}
+            aria-label={sidebarCollapsed ? "展开详情" : "收起详情"}
+            title={sidebarCollapsed ? "展开详情" : "收起详情"}
+            aria-expanded={!sidebarCollapsed}
+          >
+            {sidebarCollapsed ? (
+              <PanelRightOpen size={17} />
+            ) : (
+              <PanelRightClose size={17} />
+            )}
+          </button>
+          {onClose ? (
             <button
-              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-              className="absolute right-4 top-4 z-10 rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+              className={styles.iconButton}
+              onClick={onClose}
+              aria-label="关闭阅读"
+              title="关闭阅读"
             >
-              {sidebarCollapsed ? (
-                <PanelRightOpen size={20} />
-              ) : (
-                <PanelRightClose size={20} />
-              )}
+              <X size={18} />
             </button>
-            {contentSection}
-          </div>
-          {!sidebarCollapsed && (
-            <div className="flex w-1/3 flex-col gap-3 overflow-auto border-l bg-muted/40 p-5">
-              {detailsSection}
-            </div>
+          ) : (
+            <Link
+              className={styles.iconButton}
+              href="/dashboard/bookmarks"
+              aria-label="返回收藏"
+              title="返回收藏"
+            >
+              <X size={18} />
+            </Link>
           )}
         </div>
+      </header>
+      <div className="hidden min-h-0 flex-1 lg:flex">
+        <main className="min-h-0 min-w-0 flex-1 overflow-hidden">
+          {contentSection}
+        </main>
+        {!sidebarCollapsed && (
+          <aside className={styles.sidebar} aria-label="收藏详情">
+            <div className={styles.sidebarContent}>{detailsSection}</div>
+            {actions}
+          </aside>
+        )}
       </div>
-      {/* Render tabbed layout for narrow/vertical screens */}
-      <div className="flex h-full w-full flex-col overflow-hidden lg:hidden">
+      <div className="flex min-h-0 flex-1 flex-col lg:hidden">
         <Tabs
           value={activeTab}
           onValueChange={setActiveTab}
-          className="flex min-h-0 flex-1 flex-col overflow-hidden"
+          className="flex min-h-0 flex-1 flex-col"
         >
-          <TabsList className="z-10 mx-4 mt-2 grid w-auto grid-cols-2">
-            <TabsTrigger value="content">
+          <TabsList className="mx-4 mt-3 grid w-auto grid-cols-2 rounded-full">
+            <TabsTrigger value="content" className="rounded-full">
               {t("preview.tabs.content")}
             </TabsTrigger>
-            <TabsTrigger value="details">
+            <TabsTrigger value="details" className="rounded-full">
               {t("preview.tabs.details")}
             </TabsTrigger>
           </TabsList>
           <TabsContent
             value="content"
-            className="h-full flex-1 overflow-hidden overflow-y-auto bg-card px-4 py-3 data-[state=inactive]:hidden"
+            className="min-h-0 flex-1 overflow-hidden data-[state=inactive]:hidden"
           >
             {contentSection}
           </TabsContent>
           <TabsContent
             value="details"
-            className="h-full overflow-y-auto bg-card px-4 py-3 data-[state=inactive]:hidden"
+            className="min-h-0 flex-1 overflow-y-auto data-[state=inactive]:hidden"
           >
-            {detailsSection}
+            <div className="p-5">{detailsSection}</div>
+            {actions}
           </TabsContent>
         </Tabs>
       </div>
-    </>
+    </div>
   );
 }

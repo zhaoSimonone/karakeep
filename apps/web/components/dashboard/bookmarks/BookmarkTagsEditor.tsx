@@ -8,9 +8,11 @@ import { TagsEditor } from "./TagsEditor";
 export function BookmarkTagsEditor({
   bookmark,
   disabled,
+  quiet = false,
 }: {
   bookmark: ZBookmark;
   disabled?: boolean;
+  quiet?: boolean;
 }) {
   const { mutate } = useUpdateBookmarkTags({
     onSuccess: () => {
@@ -30,6 +32,7 @@ export function BookmarkTagsEditor({
   return (
     <TagsEditor
       tags={bookmark.tags}
+      quiet={quiet}
       disabled={disabled}
       onAttach={({ tagName, tagId }) => {
         mutate({

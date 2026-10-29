@@ -29,6 +29,7 @@ export function TagsEditor({
   disabled,
   allowCreation = true,
   placeholder,
+  quiet = false,
 }: {
   tags: ZBookmarkTags[];
   onAttach: (tag: { tagName: string; tagId?: string }) => void;
@@ -36,6 +37,7 @@ export function TagsEditor({
   disabled?: boolean;
   allowCreation?: boolean;
   placeholder?: string;
+  quiet?: boolean;
 }) {
   const api = useTRPC();
   const { t } = useTranslation();
@@ -314,6 +316,8 @@ export function TagsEditor({
             <div
               className={cn(
                 "relative flex min-h-10 w-full flex-wrap items-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 dark:bg-input/30",
+                quiet &&
+                  "min-h-0 gap-1.5 rounded-xl border-transparent bg-transparent px-0 py-0 text-xs shadow-none focus-within:border-transparent focus-within:ring-0 dark:bg-transparent",
                 isDisabled && "cursor-not-allowed opacity-50",
               )}
             >
@@ -324,14 +328,20 @@ export function TagsEditor({
                       key={tag.id}
                       className={cn(
                         "flex min-h-8 space-x-1 rounded px-2",
-                        tag.attachedBy == "ai"
-                          ? "bg-purple-500 text-white"
-                          : "bg-accent dark:bg-input",
+                        quiet
+                          ? "min-h-6 rounded-full bg-muted/70 px-2.5 py-1 text-xs text-muted-foreground"
+                          : tag.attachedBy == "ai"
+                            ? "bg-purple-500 text-white"
+                            : "bg-accent dark:bg-input",
                       )}
                     >
                       <div className="m-auto flex gap-2">
                         {tag.attachedBy === "ai" && (
-                          <Sparkles className="m-auto size-4" />
+                          <Sparkles
+                            className={
+                              quiet ? "m-auto size-3" : "m-auto size-4"
+                            }
+                          />
                         )}
                         {tag.name}
                         {!isDisabled && (

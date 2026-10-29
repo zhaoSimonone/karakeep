@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Karakeep",
-  "description": "An extension to bookmark links to karakeep.com",
-  "version": "1.2.14",
+  "name": "keeply.收好",
+  "description": "收藏网页全文、文字片段和图片，保存到你的 keeply.收好。",
+  "version": "1.2.18",
   "icons": {
     "16": "public/logo-16.png",
     "48": "public/logo-48.png",
@@ -26,11 +26,14 @@
         "dark": "logo-128.png",
         "size": 128
       }
-    ]
+    ],
+    "default_title": "keeply.收好"
   },
   "background": {
     "service_worker": "src/background/background.ts",
-    "scripts": ["src/background/background.ts"]
+    "scripts": [
+      "src/background/background.ts"
+    ]
   },
   "options_ui": {
     "page": "index.html#options",
@@ -44,20 +47,36 @@
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
   },
-  "permissions": ["storage", "tabs", "contextMenus", "activeTab", "scripting"],
-  "optional_host_permissions": ["<all_urls>"],
+  "permissions": [
+    "storage",
+    "tabs",
+    "contextMenus",
+    "activeTab",
+    "scripting"
+  ],
+  "optional_host_permissions": [
+    "<all_urls>"
+  ],
   "content_scripts": [
     {
-      "matches": ["https://karakeep.invalid/*"],
-      "js": ["src/content-scripts/singlefile-content-script.ts"],
+      "matches": [
+        "https://karakeep.invalid/*"
+      ],
+      "js": [
+        "src/content-scripts/singlefile-content-script.ts"
+      ],
       "run_at": "document_idle",
       "all_frames": false
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": ["assets/*.js"],
-      "matches": ["<all_urls>"]
+      "resources": [
+        "assets/*.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
     }
   ],
   "commands": {
@@ -65,7 +84,10 @@
       "suggested_key": {
         "default": "Ctrl+Shift+E"
       },
-      "description": "Send the current page URL to Karakeep."
+      "description": "将当前网页收藏到 keeply.收好"
     }
-  }
+  },
+  "host_permissions": [
+    "https://keeply.facezero.online/*"
+  ]
 }

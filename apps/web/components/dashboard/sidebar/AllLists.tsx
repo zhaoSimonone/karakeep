@@ -215,7 +215,7 @@ export default function AllLists({
     <ul className="sidebar-scrollbar max-h-full gap-y-2 overflow-auto text-sm">
       <li className="flex justify-between pb-3">
         <p className="pl-2 text-xs uppercase tracking-wider text-muted-foreground">
-          Lists
+          {t("search.lists")}
         </p>
         <EditListModal>
           <button type="button" aria-label={t("lists.new_list")}>

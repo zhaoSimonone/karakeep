@@ -67,7 +67,7 @@ export function TagsSelector({ bookmarkId }: { bookmarkId: string }) {
           className="h-7 gap-1 rounded-full border-dashed px-2.5 text-xs font-medium text-muted-foreground hover:text-foreground"
         >
           <Plus className="size-3.5" />
-          Add tag
+          添加标签
         </Button>
       </PopoverTrigger>
       <DynamicPopoverContent
@@ -79,10 +79,10 @@ export function TagsSelector({ bookmarkId }: { bookmarkId: string }) {
           <CommandInput
             value={input}
             onValueChange={setInput}
-            placeholder="Search or create a tag…"
+            placeholder="搜索或创建标签…"
           />
           <CommandList>
-            <CommandEmpty>Type a name to create a tag.</CommandEmpty>
+            <CommandEmpty>输入名称可创建标签。</CommandEmpty>
             {input.trim() && (
               <>
                 <CommandGroup>
@@ -96,7 +96,7 @@ export function TagsSelector({ bookmarkId }: { bookmarkId: string }) {
                     }
                   >
                     <Plus className="mr-2 size-4" />
-                    Create &quot;{input.trim()}&quot;
+                    创建 &quot;{input.trim()}&quot;
                   </CommandItem>
                 </CommandGroup>
                 <CommandSeparator />

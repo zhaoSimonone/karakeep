@@ -32,7 +32,7 @@ export function NoteEditor({ bookmarkId }: { bookmarkId: string }) {
       setHasUnsavedChanges(false);
     },
     onError: (e) => {
-      setError(e.message || "Failed to save note");
+      setError(e.message || "备注保存失败");
       setIsSaving(false);
     },
   });
@@ -58,10 +58,9 @@ export function NoteEditor({ bookmarkId }: { bookmarkId: string }) {
   return (
     <div className="flex flex-col gap-2">
       <Textarea
-        autoFocus
         className="h-24 w-full resize-none overflow-auto bg-background text-sm"
         value={noteValue}
-        placeholder="Add a note…"
+        placeholder="添加备注…"
         onChange={(e) => {
           setNoteValue(e.currentTarget.value);
           setHasUnsavedChanges(e.currentTarget.value !== bookmark.note);
@@ -76,7 +75,7 @@ export function NoteEditor({ bookmarkId }: { bookmarkId: string }) {
       {!showStatusRow && noteValue && (
         <p className="flex items-center gap-1 text-xs text-muted-foreground">
           <Check className="size-3.5 text-green-600 dark:text-green-500" />
-          Saved
+          已保存
         </p>
       )}
       {showStatusRow && (
@@ -87,7 +86,7 @@ export function NoteEditor({ bookmarkId }: { bookmarkId: string }) {
             ) : (
               hasUnsavedChanges &&
               !isSaving && (
-                <p className="text-muted-foreground">Unsaved changes</p>
+                <p className="text-muted-foreground">有尚未保存的修改</p>
               )
             )}
           </div>
@@ -102,7 +101,7 @@ export function NoteEditor({ bookmarkId }: { bookmarkId: string }) {
             ) : (
               <Check className="size-3.5" />
             )}
-            {isSaving ? "Saving…" : "Save note"}
+            {isSaving ? "保存中…" : "保存备注"}
           </Button>
         </div>
       )}

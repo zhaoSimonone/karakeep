@@ -70,7 +70,7 @@ export function ListsSelector({ bookmarkId }: { bookmarkId: string }) {
           className="h-11 w-full justify-start gap-2 rounded-none px-3 font-normal text-muted-foreground hover:text-foreground"
         >
           <Plus className="size-4" />
-          Add to list
+          加入列表
         </Button>
       </PopoverTrigger>
       <DynamicPopoverContent
@@ -79,9 +79,9 @@ export function ListsSelector({ bookmarkId }: { bookmarkId: string }) {
         className="w-[--radix-popover-trigger-width] p-0"
       >
         <Command>
-          <CommandInput placeholder="Search lists…" />
+          <CommandInput placeholder="搜索列表…" />
           <CommandList>
-            <CommandEmpty>No lists found.</CommandEmpty>
+            <CommandEmpty>未找到列表。</CommandEmpty>
             <CommandGroup>
               {allLists?.allPaths
                 .filter((path) => path[path.length - 1].userRole !== "viewer")

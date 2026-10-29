@@ -1,0 +1,92 @@
+# Production deployment proposal for this checkout. Not started on the 2 GiB host.
+# Build the exact source commit on a separate Linux amd64 builder first.
+name: karakeep-keeply
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  app:
+    image: ${KARAKEEP_IMAGE:?Set the image built from the evaluated source commit}
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:13100:3000"
+    volumes:
+      - /opt/karakeep/data:/data
+    environment:
+      DATA_DIR: /data
+      NEXTAUTH_URL: https://keeply.chatcanvas.online
+      NEXTAUTH_SECRET: ${KARAKEEP_NEXTAUTH_SECRET:?Generate an independent secret}
+      MEILI_ADDR: http://meilisearch:7700
+      MEILI_MASTER_KEY: ${KARAKEEP_MEILI_MASTER_KEY:?Generate an independent search key}
+      BROWSER_WEB_URL: http://chrome:9222
+      DISABLE_SIGNUPS: "true"
+      INFERENCE_ENABLE_AUTO_TAGGING: "false"
+      INFERENCE_ENABLE_AUTO_SUMMARIZATION: "false"
+      WORKERS_DISABLED_WORKERS: inference,embeddings,video
+      CRAWLER_NUM_WORKERS: "1"
+      SEARCH_NUM_WORKERS: "1"
+      ASSET_PREPROCESSING_NUM_WORKERS: "1"
+      CRAWLER_PARSER_MEM_LIMIT_MB: "256"
+      CRAWLER_STORE_SCREENSHOT: "false"
+      CRAWLER_STORE_PDF: "false"
+      CRAWLER_FULL_PAGE_ARCHIVE: "false"
+      CRAWLER_VIDEO_DOWNLOAD: "false"
+      CRAWLER_ENABLE_ADBLOCKER: "false"
+      CRAWLER_ENABLE_AUTOCONSENT: "false"
+      MAX_ASSET_SIZE_MB: "20"
+      NODE_OPTIONS: --max-old-space-size=256
+      NEXT_TELEMETRY_DISABLED: "1"
+    # Budgets, not measured runtime requirements. Verify under representative load.
+    mem_limit: 1024m
+    memswap_limit: 1280m
+    cpus: 1.0
+    pids_limit: 256
+    stop_grace_period: 45s
+    logging: *logging
+    depends_on:
+      - meilisearch
+      - chrome
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.41.0
+    restart: unless-stopped
+    environment:
+      MEILI_ENV: production
+      MEILI_MASTER_KEY: ${KARAKEEP_MEILI_MASTER_KEY:?Generate an independent search key}
+      MEILI_NO_ANALYTICS: "true"
+      MEILI_MAX_INDEXING_MEMORY: 128MiB
+      MEILI_MAX_INDEXING_THREADS: "1"
+    volumes:
+      - /opt/karakeep/meilisearch:/meili_data
+    mem_limit: 256m
+    memswap_limit: 256m
+    cpus: 0.5
+    pids_limit: 128
+    logging: *logging
+
+  chrome:
+    image: ${KARAKEEP_CHROME_IMAGE:?Pin the official Chrome image by digest}
+    restart: unless-stopped
+    init: true
+    shm_size: 64m
+    command:
+      - --disable-gpu
+      - --disable-dev-shm-usage
+      - --hide-scrollbars
+      - --disable-blink-features=AutomationControlled
+      - --window-size=1440,900
+    mem_limit: 384m
+    memswap_limit: 512m
+    cpus: 0.5
+    pids_limit: 192
+    logging: *logging

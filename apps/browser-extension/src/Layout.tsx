@@ -24,7 +24,7 @@ export default function Layout() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-3">
       <PopupHeader>
         <a
           className={cn(
@@ -34,23 +34,23 @@ export default function Layout() {
           target="_blank"
           rel="noreferrer"
           href={`${settings.address}/dashboard/bookmarks`}
-          aria-label="Open Karakeep"
-          title="Open Karakeep"
+          aria-label="打开 keeply.收好"
+          title="打开 keeply.收好"
         >
           <House className="size-4" />
         </a>
         {process.env.NODE_ENV == "development" && (
-          <HeaderIconButton label="Reload" onClick={() => navigate(0)}>
+          <HeaderIconButton label="重新加载" onClick={() => navigate(0)}>
             <RefreshCw className="size-4" />
           </HeaderIconButton>
         )}
         <HeaderIconButton
-          label="Settings"
+          label="设置"
           onClick={() => navigate("/options", { state: { canGoBack: true } })}
         >
           <Settings className="size-4" />
         </HeaderIconButton>
-        <HeaderIconButton label="Close" onClick={() => window.close()}>
+        <HeaderIconButton label="关闭" onClick={() => window.close()}>
           <X className="size-4" />
         </HeaderIconButton>
       </PopupHeader>

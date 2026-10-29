@@ -3,6 +3,7 @@ import OpenAI from "openai";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { z } from "zod";
 
+import { AnthropicInferenceClient } from "./anthropicInference";
 import serverConfig from "./config";
 import { createCustomFetch } from "./customFetch";
 import logger from "./logger";
@@ -127,6 +128,7 @@ export interface EmbeddingClient {
 }
 
 export interface InferenceClient extends EmbeddingClient {
+  readonly supportsImageInference?: boolean;
   inferFromText(
     prompt: string,
     opts: Partial<InferenceOptions>,
@@ -209,6 +211,17 @@ const buildOpenAIClient = (config: OpenAIEmbeddingConfig) =>
 
 export class InferenceClientFactory {
   static build(): InferenceClient | null {
+    if (serverConfig.inference.anthropicApiKey) {
+      return new AnthropicInferenceClient({
+        apiKey: serverConfig.inference.anthropicApiKey,
+        baseURL: serverConfig.inference.anthropicBaseUrl,
+        model: serverConfig.inference.textModel,
+        maxOutputTokens: serverConfig.inference.maxOutputTokens,
+        timeoutSec: serverConfig.inference.jobTimeoutSec,
+        effort: serverConfig.inference.anthropicReasoningEffort,
+      });
+    }
+
     if (serverConfig.inference.openAIApiKey) {
       return OpenAIInferenceClient.fromConfig();
     }

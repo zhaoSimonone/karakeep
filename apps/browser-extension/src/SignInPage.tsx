@@ -17,7 +17,7 @@ const enum LoginType {
 }
 
 const CONNECTION_ERROR_MESSAGE =
-  "Couldn't connect to this Karakeep server. Check the server address and your internet connection, then try again.";
+  "无法连接收好服务器，请检查服务器地址和网络后重试。";
 
 function getLoginErrorMessage(
   error: { data?: { code?: string } | null; message: string },
@@ -49,12 +49,16 @@ export default function SignInPage() {
   const { mutate: login, isPending: userNamePasswordRequestIsPending } =
     useMutation(
       api.apiKeys.exchange.mutationOptions({
-        onSuccess: (resp) => {
-          setSettings((s) => ({ ...s, apiKey: resp.key, apiKeyId: resp.id }));
+        onSuccess: async (resp) => {
+          await setSettings((s) => ({
+            ...s,
+            apiKey: resp.key,
+            apiKeyId: resp.id,
+          }));
           navigate("/options");
         },
         onError: (e) => {
-          setError(getLoginErrorMessage(e, "Incorrect email or password."));
+          setError(getLoginErrorMessage(e, "邮箱或密码不正确。"));
         },
       }),
     );
@@ -62,13 +66,13 @@ export default function SignInPage() {
   const { mutate: validateApiKey, isPending: apiKeyValueRequestIsPending } =
     useMutation(
       api.apiKeys.validate.mutationOptions({
-        onSuccess: (_resp, req) => {
+        onSuccess: async (_resp, req) => {
           // Store exactly the key that was validated, not the live input.
-          setSettings((s) => ({ ...s, apiKey: req.apiKey }));
+          await setSettings((s) => ({ ...s, apiKey: req.apiKey }));
           navigate("/options");
         },
         onError: (e) => {
-          setError(getLoginErrorMessage(e, "That API key isn't valid."));
+          setError(getLoginErrorMessage(e, "API 密钥无效。"));
         },
       }),
     );
@@ -84,7 +88,7 @@ export default function SignInPage() {
       login({
         email: formData.email.trim(),
         password: formData.password,
-        keyName: `Browser extension: (${randStr})`,
+        keyName: `keeply.收好扩展： (${randStr})`,
       });
     } else {
       validateApiKey({ apiKey: apiKey.trim() });
@@ -102,7 +106,7 @@ export default function SignInPage() {
           <>
             <div className="flex flex-col gap-1.5">
               <label htmlFor="email" className="text-sm font-medium">
-                Email
+                邮箱
               </label>
               <Input
                 id="email"
@@ -119,7 +123,7 @@ export default function SignInPage() {
             </div>
             <div className="flex flex-col gap-1.5">
               <label htmlFor="password" className="text-sm font-medium">
-                Password
+                密码
               </label>
               <Input
                 id="password"
@@ -136,14 +140,14 @@ export default function SignInPage() {
         ) : (
           <div className="flex flex-col gap-1.5">
             <label htmlFor="apiKey" className="text-sm font-medium">
-              API key
+              API 密钥
             </label>
             <Input
               id="apiKey"
               name="apiKey"
               type="password"
               autoComplete="off"
-              placeholder="Paste your key"
+              placeholder="粘贴 API 密钥"
               autoFocus
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
@@ -155,7 +159,7 @@ export default function SignInPage() {
 
         <Button type="submit" disabled={isPending} className="mt-1 gap-2">
           {isPending && <Spinner className="size-4" />}
-          {isPending ? "Signing in…" : "Sign in"}
+          {isPending ? "正在登录…" : "登录"}
         </Button>
       </form>
 
@@ -164,7 +168,7 @@ export default function SignInPage() {
           type="button"
           onClick={() => navigate("/server")}
           className="flex max-w-full items-center gap-1.5 rounded-full border px-3 py-1 hover:bg-accent hover:text-foreground"
-          title="Change server"
+          title="更改服务器"
         >
           <Server className="size-3.5 shrink-0" />
           <span className="truncate">
@@ -184,18 +188,18 @@ export default function SignInPage() {
           className="underline-offset-4 hover:text-foreground hover:underline"
         >
           {loginType === LoginType.Password
-            ? "Use an API key instead"
-            : "Use your password instead"}
+            ? "使用 API 密钥登录"
+            : "使用邮箱和密码登录"}
         </button>
         <span>
-          New to Karakeep?{" "}
+          第一次使用收好？{" "}
           <a
             href={`${settings.address}/signup`}
             target="_blank"
             rel="noreferrer"
             className="font-medium text-foreground underline-offset-4 hover:underline"
           >
-            Create account
+            创建账号
           </a>
         </span>
       </div>
