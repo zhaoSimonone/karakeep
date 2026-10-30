@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
+import { KeeplyListIcon } from "@/components/KarakeepIcon";
 import SidebarItem from "@/components/shared/sidebar/SidebarItem";
 import { Button } from "@/components/ui/button";
 import {
@@ -119,7 +120,7 @@ function DroppableListSidebarItem({
       }
       logo={
         <span className="flex">
-          <span className="text-lg"> {node.item.icon}</span>
+          <KeeplyListIcon icon={node.item.icon} />
         </span>
       }
       name={node.item.name}
@@ -228,7 +229,7 @@ export default function AllLists({
       </li>
       <SidebarItem
         collapseButton={<span className="size-4" />}
-        logo={<span className="text-lg">📋</span>}
+        logo={<KeeplyListIcon kind="all" />}
         name={t("lists.all_lists")}
         path={`/dashboard/lists`}
         linkClassName="py-0.5 px-1"
@@ -236,7 +237,7 @@ export default function AllLists({
       />
       <SidebarItem
         collapseButton={<span className="size-4" />}
-        logo={<span className="text-lg">⭐️</span>}
+        logo={<KeeplyListIcon kind="favourites" />}
         name={t("lists.favourites")}
         path={`/dashboard/favourites`}
         linkClassName="py-0.5 px-1"
@@ -269,7 +270,7 @@ export default function AllLists({
                 open={sharedListsOpen}
               />
             }
-            logo={<span className="text-lg">👥</span>}
+            logo={<KeeplyListIcon kind="shared" />}
             name={t("lists.shared_lists")}
             path="#"
             linkClassName="py-0.5 px-1"

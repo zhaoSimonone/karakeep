@@ -1,6 +1,7 @@
 import AllListsView from "@/components/dashboard/lists/AllListsView";
 import { EditListModal } from "@/components/dashboard/lists/EditListModal";
 import { PendingInvitationsCard } from "@/components/dashboard/lists/PendingInvitationsCard";
+import { KeeplyListIcon } from "@/components/KarakeepIcon";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/lib/i18n/server";
 import { api } from "@/server/api/client";
@@ -18,8 +19,9 @@ export default async function ListsPage() {
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
         <div className="space-y-1">
-          <h1 className="text-2xl tracking-normal text-foreground">
-            📋 {t("lists.all_lists")}
+          <h1 className="flex items-center gap-3 text-2xl tracking-normal text-foreground">
+            <KeeplyListIcon kind="all" size="lg" />
+            <span>{t("lists.all_lists")}</span>
           </h1>
           <p className="text-md text-muted-foreground">
             {t("lists.summary_list", { count: lists.lists.length })} ·{" "}

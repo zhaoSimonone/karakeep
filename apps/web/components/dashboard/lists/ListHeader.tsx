@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { KeeplyListIcon } from "@/components/KarakeepIcon";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/lib/i18n/client";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
@@ -61,9 +62,7 @@ export default function ListHeader({
   return (
     <div className="flex items-start justify-between gap-4">
       <div className="flex min-w-0 flex-1 items-start gap-4">
-        <span className="flex size-16 shrink-0 items-center justify-center rounded-2xl bg-muted text-4xl">
-          {list.icon}
-        </span>
+        <KeeplyListIcon icon={list.icon} size="lg" />
         <div className="min-w-0 flex-1">
           <h1 className="truncate text-2xl font-semibold leading-tight">
             {list.name}

@@ -54,6 +54,94 @@ body {
   outline: 2px solid hsl(var(--ring));
   outline-offset: 3px;
 }
+.keeply-mark {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid hsl(39 72% 47% / 0.3);
+  border-radius: 13px;
+  color: hsl(35 30% 13%);
+  background:
+    radial-gradient(circle at 28% 18%, hsl(0 0% 100% / 0.55), transparent 34%),
+    linear-gradient(145deg, hsl(48 100% 68%), hsl(39 94% 56%));
+  box-shadow:
+    0 1px 1px hsl(35 30% 13% / 0.08),
+    0 5px 14px hsl(39 82% 47% / 0.16);
+}
+.keeply-mark::after {
+  position: absolute;
+  inset: 5px;
+  border: 1px solid hsl(0 0% 100% / 0.3);
+  border-radius: 9px;
+  content: "";
+  pointer-events: none;
+}
+.keeply-mark-dot {
+  position: absolute;
+  right: 7px;
+  bottom: 7px;
+  z-index: 1;
+  width: 5px;
+  height: 5px;
+  border: 1px solid hsl(0 0% 100% / 0.78);
+  border-radius: 999px;
+  background: hsl(35 30% 13%);
+}
+.keeply-list-icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid hsl(var(--border) / 0.9);
+  color: hsl(var(--muted-foreground));
+  background: hsl(var(--muted) / 0.62);
+  box-shadow: 0 1px 2px hsl(35 30% 13% / 0.04);
+}
+.keeply-list-icon svg {
+  flex: 0 0 auto;
+}
+.keeply-list-icon-sm {
+  width: 26px;
+  height: 26px;
+  border-radius: 9px;
+  font-size: 14px;
+  line-height: 1;
+}
+.keeply-list-icon-sm svg {
+  width: 15px;
+  height: 15px;
+}
+.keeply-list-icon-lg {
+  width: 48px;
+  height: 48px;
+  border-radius: 15px;
+  font-size: 21px;
+  line-height: 1;
+}
+.keeply-list-icon-lg svg {
+  width: 22px;
+  height: 22px;
+}
+.keeply-list-icon:has(.fill-current) {
+  border-color: hsl(43 85% 58% / 0.5);
+  color: hsl(38 75% 39%);
+  background: hsl(44 96% 61% / 0.2);
+}
+@media (prefers-color-scheme: dark) {
+  .keeply-mark {
+    border-color: hsl(44 90% 64% / 0.38);
+    box-shadow:
+      0 1px 1px hsl(0 0% 0% / 0.22),
+      0 5px 16px hsl(39 82% 47% / 0.2);
+  }
+  .keeply-list-icon:has(.fill-current) {
+    color: hsl(44 90% 64%);
+    background: hsl(44 90% 64% / 0.15);
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

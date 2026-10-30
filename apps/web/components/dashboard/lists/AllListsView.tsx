@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import Link from "next/link";
+import { KeeplyListIcon } from "@/components/KarakeepIcon";
 import { Button } from "@/components/ui/button";
 import { CollapsibleTriggerChevron } from "@/components/ui/collapsible";
 import { useTranslation } from "@/lib/i18n/client";
@@ -33,6 +34,7 @@ function ListItem({
   collapsible,
   itemCount,
   pinned,
+  kind,
   description,
 }: {
   name: string;
@@ -44,6 +46,7 @@ function ListItem({
   collapsible: boolean;
   itemCount?: number;
   pinned?: boolean;
+  kind?: "favourites" | "archive";
   description?: string;
   style?: React.CSSProperties;
 }) {
@@ -82,16 +85,7 @@ function ListItem({
           />
         </div>
         <Link href={path} className="flex min-w-0 items-center gap-3">
-          <span
-            className={cn(
-              "flex size-12 shrink-0 items-center justify-center rounded-xl border text-xl shadow-sm",
-              pinned
-                ? "border-amber-200 bg-amber-50 dark:border-amber-700 dark:bg-amber-900"
-                : "border-border bg-muted/55",
-            )}
-          >
-            {icon}
-          </span>
+          <KeeplyListIcon icon={icon} kind={kind} size="lg" />
           <div className="flex min-w-0 flex-col">
             <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
               <p className="truncate text-lg text-foreground">{name}</p>
@@ -185,20 +179,22 @@ export default function AllListsView({
           <ListItem
             collapsible={false}
             name={t("lists.favourites")}
-            icon="⭐️"
+            icon=""
             description="Things I keep coming back to."
             itemCount={favoritesCount}
             path={`/dashboard/favourites`}
             pinned
+            kind="favourites"
           />
           <ListItem
             collapsible={false}
             name={t("common.archive")}
-            icon="🗄️"
+            icon=""
             description="Cold storage, out of the way."
             itemCount={archivedCount}
             path={`/dashboard/archive`}
             pinned
+            kind="archive"
           />
         </ul>
       </Section>

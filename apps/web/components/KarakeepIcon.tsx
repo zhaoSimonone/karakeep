@@ -1,19 +1,75 @@
-import { BookmarkCheck } from "lucide-react";
+import { Archive, Bookmark, ClipboardList, Star, Users } from "lucide-react";
+
+export function KeeplyMark({
+  size = 36,
+  className,
+}: {
+  size?: number;
+  className?: string;
+}) {
+  return (
+    <span
+      className={`keeply-mark ${className ?? ""}`}
+      style={{ width: size, height: size }}
+      aria-hidden="true"
+    >
+      <Bookmark size={size * 0.52} strokeWidth={2.1} />
+      <span className="keeply-mark-dot" />
+    </span>
+  );
+}
+
+export function KeeplyListIcon({
+  icon,
+  kind,
+  size = "sm",
+}: {
+  icon?: string;
+  kind?: "all" | "favourites" | "archive" | "shared";
+  size?: "sm" | "lg";
+}) {
+  const Icon =
+    kind === "all"
+      ? ClipboardList
+      : kind === "favourites"
+        ? Star
+        : kind === "archive"
+          ? Archive
+          : kind === "shared"
+            ? Users
+            : null;
+
+  return (
+    <span
+      className={`keeply-list-icon keeply-list-icon-${size}`}
+      aria-hidden="true"
+    >
+      {Icon ? (
+        <Icon
+          className={kind === "favourites" ? "fill-current" : undefined}
+          strokeWidth={1.8}
+        />
+      ) : (
+        icon
+      )}
+    </span>
+  );
+}
 
 export default function KeeplyLogo({ height }: { height: number }) {
   return (
     <span
-      className="flex items-center gap-2 whitespace-nowrap"
+      className="flex items-center gap-2.5 whitespace-nowrap"
       aria-label="Keeply · 收好"
       style={{ height }}
     >
-      <span className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-        <BookmarkCheck size={23} strokeWidth={1.8} aria-hidden="true" />
-      </span>
-      <span className="text-2xl font-bold tracking-tight">
+      <KeeplyMark size={36} />
+      <span className="text-[25px] font-bold tracking-[-0.045em]">
         keeply<span className="text-muted-foreground">.</span>
       </span>
-      <span className="text-sm font-medium text-muted-foreground">收好</span>
+      <span className="border-s border-border/70 ps-2.5 text-[13px] font-medium tracking-wide text-muted-foreground">
+        收好
+      </span>
     </span>
   );
 }

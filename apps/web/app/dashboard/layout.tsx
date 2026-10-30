@@ -59,31 +59,31 @@ export default async function Dashboard({
     [
       {
         name: t("common.home"),
-        icon: <Home size={18} />,
+        icon: <Home className="size-[17px]" strokeWidth={1.8} />,
         path: "/dashboard/bookmarks",
       },
       PluginManager.isRegistered(PluginType.Search)
         ? [
             {
               name: t("common.search"),
-              icon: <Search size={18} />,
+              icon: <Search className="size-[17px]" strokeWidth={1.8} />,
               path: "/dashboard/search",
             },
           ]
         : [],
       {
         name: t("common.tags"),
-        icon: <Tag size={18} />,
+        icon: <Tag className="size-[17px]" strokeWidth={1.8} />,
         path: "/dashboard/tags",
       },
       {
         name: t("common.highlights"),
-        icon: <Highlighter size={18} />,
+        icon: <Highlighter className="size-[17px]" strokeWidth={1.8} />,
         path: "/dashboard/highlights",
       },
       {
         name: t("common.archive"),
-        icon: <Archive size={18} />,
+        icon: <Archive className="size-[17px]" strokeWidth={1.8} />,
         path: "/dashboard/archive",
       },
     ].flat();
@@ -92,7 +92,7 @@ export default async function Dashboard({
     ...items(t),
     {
       name: t("lists.all_lists"),
-      icon: <ClipboardList size={18} />,
+      icon: <ClipboardList className="size-[17px]" strokeWidth={1.8} />,
       path: "/dashboard/lists",
     },
   ];
