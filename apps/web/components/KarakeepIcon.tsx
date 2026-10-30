@@ -1,4 +1,10 @@
-import { Archive, ClipboardList, Star, Users } from "lucide-react";
+import {
+  Archive,
+  ClipboardCheck,
+  ClipboardList,
+  Star,
+  Users,
+} from "lucide-react";
 import Image from "next/image";
 
 export function KeeplyMark({
@@ -41,7 +47,9 @@ export function KeeplyListIcon({
           ? Archive
           : kind === "shared"
             ? Users
-            : null;
+            : icon?.replace(/\uFE0F/g, "") === "✅"
+              ? ClipboardCheck
+              : null;
 
   return (
     <span
