@@ -10,7 +10,7 @@ export function KeeplyMark({
 }) {
   return (
     <Image
-      src="/icons/logo-icon.svg?v=20261030-flat"
+      src="/icons/logo-icon.svg?v=20261030-polished"
       alt=""
       className={`shrink-0 ${className ?? ""}`}
       width={size}
