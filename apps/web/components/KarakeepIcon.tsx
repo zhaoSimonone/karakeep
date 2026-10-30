@@ -1,4 +1,5 @@
-import { Archive, Bookmark, ClipboardList, Star, Users } from "lucide-react";
+import { Archive, ClipboardList, Star, Users } from "lucide-react";
+import Image from "next/image";
 
 export function KeeplyMark({
   size = 36,
@@ -8,14 +9,15 @@ export function KeeplyMark({
   className?: string;
 }) {
   return (
-    <span
-      className={`keeply-mark ${className ?? ""}`}
-      style={{ width: size, height: size }}
+    <Image
+      src="/icons/logo-icon.svg"
+      alt=""
+      className={`shrink-0 ${className ?? ""}`}
+      width={size}
+      height={size}
+      unoptimized
       aria-hidden="true"
-    >
-      <Bookmark size={size * 0.52} strokeWidth={2.1} />
-      <span className="keeply-mark-dot" />
-    </span>
+    />
   );
 }
 

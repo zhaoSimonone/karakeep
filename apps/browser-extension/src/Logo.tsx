@@ -1,5 +1,3 @@
-import { BookmarkCheck } from "lucide-react";
-
 import { cn } from "./utils/css";
 
 export default function Logo({ className }: { className?: string }) {
@@ -10,7 +8,12 @@ export default function Logo({ className }: { className?: string }) {
         className,
       )}
     >
-      <BookmarkCheck className="size-5 text-emerald-600" aria-hidden="true" />
+      <img
+        src="/logo-48.png"
+        alt=""
+        className="size-7 shrink-0"
+        aria-hidden="true"
+      />
       <span>keeply.收好</span>
     </span>
   );
