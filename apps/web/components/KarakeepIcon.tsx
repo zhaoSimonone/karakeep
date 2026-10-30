@@ -10,7 +10,7 @@ export function KeeplyMark({
 }) {
   return (
     <Image
-      src="/icons/logo-icon.svg"
+      src="/icons/logo-icon.svg?v=20261030-flat"
       alt=""
       className={`shrink-0 ${className ?? ""}`}
       width={size}
@@ -71,7 +71,7 @@ export default function KeeplyLogo({ height }: { height: number }) {
       <span className="text-[25px] font-bold tracking-[-0.045em]">
         keeply<span className="text-muted-foreground">.</span>
       </span>
-      <span className="border-s border-border/70 ps-2.5 text-[13px] font-medium tracking-wide text-muted-foreground">
+      <span className="text-[13px] font-medium tracking-wide text-muted-foreground">
         收好
       </span>
     </span>

@@ -18,6 +18,7 @@ for file in next_dir.iterdir():
         shutil.copy2(file, out / 'web-next' / file.name)
 shutil.copy2(next_dir / 'standalone/apps/web/server.js', out / 'web-server.js')
 shutil.copytree(root / 'apps/workers/dist', out / 'worker-dist')
+shutil.copytree(root / 'apps/web/public', out / 'web-public')
 shutil.copy2(root / 'deploy/singapore/Dockerfile', out / 'Dockerfile')
 # Catch accidental credentials/native binaries in the payload, without logging values.
 values = []

@@ -22,13 +22,18 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: "/icons/logo-icon.svg",
+        url: "/favicon.ico?v=20261030-flat",
+        type: "image/x-icon",
+        sizes: "16x16 32x32",
+      },
+      {
+        url: "/icons/logo-icon.svg?v=20261030-flat",
         type: "image/svg+xml",
         sizes: "any",
         media: "(prefers-color-scheme: light)",
       },
       {
-        url: "/icons/logo-icon-dark.svg",
+        url: "/icons/logo-icon-dark.svg?v=20261030-flat",
         type: "image/svg+xml",
         sizes: "any",
         media: "(prefers-color-scheme: dark)",
