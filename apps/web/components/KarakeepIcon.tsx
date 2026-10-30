@@ -23,10 +23,12 @@ export function KeeplyListIcon({
   icon,
   kind,
   size = "sm",
+  variant = "tile",
 }: {
   icon?: string;
   kind?: "all" | "favourites" | "archive" | "shared";
   size?: "sm" | "lg";
+  variant?: "tile" | "sidebar";
 }) {
   const Icon =
     kind === "all"
@@ -41,7 +43,7 @@ export function KeeplyListIcon({
 
   return (
     <span
-      className={`keeply-list-icon keeply-list-icon-${size}`}
+      className={`keeply-list-icon keeply-list-icon-${size} keeply-list-icon-${variant}`}
       aria-hidden="true"
     >
       {Icon ? (

@@ -120,7 +120,7 @@ function DroppableListSidebarItem({
       }
       logo={
         <span className="flex">
-          <KeeplyListIcon icon={node.item.icon} />
+          <KeeplyListIcon icon={node.item.icon} variant="sidebar" />
         </span>
       }
       name={node.item.name}
@@ -229,7 +229,7 @@ export default function AllLists({
       </li>
       <SidebarItem
         collapseButton={<span className="size-4" />}
-        logo={<KeeplyListIcon kind="all" />}
+        logo={<KeeplyListIcon kind="all" variant="sidebar" />}
         name={t("lists.all_lists")}
         path={`/dashboard/lists`}
         linkClassName="py-0.5 px-1"
@@ -237,7 +237,7 @@ export default function AllLists({
       />
       <SidebarItem
         collapseButton={<span className="size-4" />}
-        logo={<KeeplyListIcon kind="favourites" />}
+        logo={<KeeplyListIcon kind="favourites" variant="sidebar" />}
         name={t("lists.favourites")}
         path={`/dashboard/favourites`}
         linkClassName="py-0.5 px-1"
@@ -270,7 +270,7 @@ export default function AllLists({
                 open={sharedListsOpen}
               />
             }
-            logo={<KeeplyListIcon kind="shared" />}
+            logo={<KeeplyListIcon kind="shared" variant="sidebar" />}
             name={t("lists.shared_lists")}
             path="#"
             linkClassName="py-0.5 px-1"
