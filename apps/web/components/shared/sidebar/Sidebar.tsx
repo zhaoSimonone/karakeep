@@ -20,7 +20,7 @@ export default async function Sidebar({
   return (
     <aside className="keeply-sidebar flex h-[calc(100dvh-64px)] w-[232px] flex-col gap-6 px-4 pb-4 pt-6">
       <div>
-        <ul className="space-y-1 text-sm">
+        <ul className="text-sm">
           {items(t).map((item) => (
             <SidebarItem
               key={item.name}

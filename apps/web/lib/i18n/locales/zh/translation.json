@@ -1261,6 +1261,11 @@
     "focus_search_alt": "聚焦搜索"
   },
   "keeply_ui": {
+    "list_icon": "选择列表图标",
+    "clear_parent": "移除父级列表",
+    "pinned_lists": "快捷访问",
+    "favorites_description": "常看常新的内容，随时回来翻阅。",
+    "archive_description": "读过的内容，安心留存。",
     "title": "我的收藏",
     "subtitle": "让值得留下的内容，有处可寻。",
     "add": "收好新内容",

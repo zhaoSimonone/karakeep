@@ -145,7 +145,7 @@ body {
   width: 17px;
   height: 17px;
 }
-@media (prefers-color-scheme: dark) {
+.dark {
   .keeply-mark {
     border-color: hsl(44 90% 64% / 0.38);
     box-shadow:

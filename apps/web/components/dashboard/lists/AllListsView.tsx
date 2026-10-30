@@ -6,7 +6,6 @@ import { KeeplyListIcon } from "@/components/KarakeepIcon";
 import { Button } from "@/components/ui/button";
 import { CollapsibleTriggerChevron } from "@/components/ui/collapsible";
 import { useTranslation } from "@/lib/i18n/client";
-import { cn } from "@/lib/utils";
 import { MoreHorizontal } from "lucide-react";
 
 import type { ZBookmarkList } from "@karakeep/shared/types/lists";
@@ -27,68 +26,52 @@ function ListItem({
   name,
   icon,
   path,
-  level = 0,
   style,
   list,
   open,
   collapsible,
   itemCount,
-  pinned,
   kind,
   description,
 }: {
   name: string;
   icon: string;
   path: string;
-  level?: number;
   list?: ZBookmarkList;
   open?: boolean;
   collapsible: boolean;
   itemCount?: number;
-  pinned?: boolean;
   kind?: "favourites" | "archive";
   description?: string;
   style?: React.CSSProperties;
 }) {
-  const accentColors = [
-    "bg-sky-500",
-    "bg-slate-400",
-    "bg-violet-500",
-    "bg-rose-500",
-    "bg-emerald-500",
-    "bg-amber-500",
-  ];
-  const accentColor = accentColors[level % accentColors.length];
-  const formattedItemCount =
-    itemCount !== undefined ? itemCount.toLocaleString() : undefined;
+  const { t } = useTranslation();
 
   return (
     <li
       className="group/list-row flex min-h-20 items-center justify-between gap-x-3 gap-y-2 px-4 py-4 transition-colors hover:bg-accent/30"
       style={style}
     >
-      <div className="flex items-center gap-2">
-        <div className="flex h-full items-center justify-end gap-2">
-          {collapsible ? (
-            <CollapsibleTriggerChevron
-              className="size-4 shrink-0 rounded-sm text-muted-foreground transition-transform hover:text-foreground"
-              open={open ?? false}
-            />
-          ) : (
-            <span className="size-4 shrink-0" />
-          )}
-          <span
-            className={cn(
-              "h-9 w-1 shrink-0 rounded-full opacity-70",
-              pinned ? "bg-amber-500" : accentColor,
-            )}
+      <div className="flex min-w-0 flex-1 items-center gap-2">
+        {collapsible && (
+          <CollapsibleTriggerChevron
+            className="size-4 shrink-0 rounded-sm text-muted-foreground"
+            open={open ?? false}
           />
-        </div>
-        <Link href={path} className="flex min-w-0 items-center gap-3">
+        )}
+        <Link
+          href={path}
+          className="flex min-w-0 flex-1 items-center gap-3 rounded-xl"
+        >
           <KeeplyListIcon icon={icon} kind={kind} size="lg" />
           <div className="flex min-w-0 flex-col">
-            <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
-              <p className="truncate text-lg text-foreground">{name}</p>
+            <div className="min-w-0">
+              <p
+                title={name}
+                className="truncate text-base font-medium text-foreground"
+              >
+                {name}
+              </p>
             </div>
             {(description || list?.description) && (
               <p className="truncate text-sm text-muted-foreground">
@@ -98,7 +81,7 @@ function ListItem({
           </div>
         </Link>
       </div>
-      <div className="flex items-center gap-2 text-muted-foreground">
+      <div className="flex shrink-0 items-center gap-2 text-sm text-muted-foreground">
         {list && (
           <>
             <div className="hidden items-center gap-2 sm:flex">
@@ -109,7 +92,8 @@ function ListItem({
             </div>
             <ListOptions list={list}>
               <Button
-                className="flex items-center justify-center"
+                className="size-9 shrink-0 rounded-full p-0"
+                aria-label={`${name} · ${t("actions.more")}`}
                 variant="ghost"
               >
                 <MoreHorizontal className="size-4" />
@@ -117,9 +101,9 @@ function ListItem({
             </ListOptions>
           </>
         )}
-        {!list && formattedItemCount !== undefined && (
+        {!list && itemCount !== undefined && (
           <span className="hidden items-center gap-2 sm:flex">
-            {formattedItemCount} items
+            {t("lists.items_count", { count: itemCount })}
           </span>
         )}
       </div>
@@ -136,10 +120,10 @@ function Section({
 }) {
   return (
     <section className="space-y-3">
-      <h2 className="px-1 text-sm font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+      <h2 className="px-1 text-xs font-medium tracking-wider text-muted-foreground">
         {title}
       </h2>
-      <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
+      <div className="overflow-hidden rounded-[20px] border bg-card shadow-sm">
         {children}
       </div>
     </section>
@@ -174,33 +158,31 @@ export default function AllListsView({
 
   return (
     <div className="space-y-8">
-      <Section title="Pinned">
+      <Section title={t("keeply_ui.pinned_lists")}>
         <ul className="divide-y">
           <ListItem
             collapsible={false}
             name={t("lists.favourites")}
             icon=""
-            description="Things I keep coming back to."
+            description={t("keeply_ui.favorites_description")}
             itemCount={favoritesCount}
             path={`/dashboard/favourites`}
-            pinned
             kind="favourites"
           />
           <ListItem
             collapsible={false}
             name={t("common.archive")}
             icon=""
-            description="Cold storage, out of the way."
+            description={t("keeply_ui.archive_description")}
             itemCount={archivedCount}
             path={`/dashboard/archive`}
-            pinned
             kind="archive"
           />
         </ul>
       </Section>
 
       {hasOwnedLists && (
-        <Section title="All">
+        <Section title={t("lists.all_lists")}>
           <CollapsibleBookmarkLists
             className="border-b last:border-b-0"
             listsData={lists}
@@ -210,7 +192,6 @@ export default function AllListsView({
                 name={node.item.name}
                 icon={node.item.icon}
                 itemCount={numBookmarks}
-                level={level}
                 list={node.item}
                 path={`/dashboard/lists/${node.item.id}`}
                 collapsible={node.children.length > 0}
@@ -228,12 +209,11 @@ export default function AllListsView({
             className="border-b last:border-b-0"
             listsData={lists}
             filter={(node) => node.item.userRole !== "owner"}
-            render={({ node, level, open, numBookmarks }) => (
+            render={({ node, open, numBookmarks }) => (
               <ListItem
                 name={node.item.name}
                 icon={node.item.icon}
                 itemCount={numBookmarks}
-                level={level}
                 list={node.item}
                 path={`/dashboard/lists/${node.item.id}`}
                 collapsible={node.children.length > 0}

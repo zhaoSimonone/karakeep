@@ -244,7 +244,10 @@ export function EditListModal({
                     <FormItem>
                       <FormControl>
                         <Popover>
-                          <PopoverTrigger className="h-full rounded border border-input px-2 text-2xl">
+                          <PopoverTrigger
+                            aria-label={t("keeply_ui.list_icon")}
+                            className="h-full rounded-xl border border-input px-2 text-2xl"
+                          >
                             {field.value}
                           </PopoverTrigger>
                           <PopoverContent className="w-auto">
@@ -272,7 +275,8 @@ export function EditListModal({
                         <Input
                           type="text"
                           className="w-full"
-                          placeholder="List Name"
+                          placeholder={t("common.name")}
+                          aria-label={t("common.name")}
                           {...field}
                         />
                       </FormControl>
@@ -293,7 +297,7 @@ export function EditListModal({
                       <Input
                         type="text"
                         className="w-full"
-                        placeholder="Description"
+                        placeholder={t("lists.description")}
                         {...field}
                       />
                     </FormControl>
@@ -324,11 +328,14 @@ export function EditListModal({
                       <Button
                         type="button"
                         variant="ghost"
+                        className="size-10 shrink-0 rounded-full p-0"
+                        aria-label={t("keeply_ui.clear_parent")}
+                        disabled={!field.value}
                         onClick={() => {
                           form.setValue("parentId", "");
                         }}
                       >
-                        <X className="size-6" />
+                        <X className="size-4" />
                       </Button>
                     </div>
                     <FormMessage />

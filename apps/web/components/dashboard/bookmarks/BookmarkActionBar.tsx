@@ -18,7 +18,7 @@ export default function BookmarkActionBar({
 }) {
   const { t } = useTranslation();
   return (
-    <div className="flex text-muted-foreground">
+    <div className="flex shrink-0 items-center text-muted-foreground">
       {bookmark.favourited && (
         <FavouritedActionIcon
           className={cn("m-1 size-8 rounded p-1", favouritedClassName)}

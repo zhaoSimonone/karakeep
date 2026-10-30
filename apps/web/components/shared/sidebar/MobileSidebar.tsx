@@ -13,7 +13,7 @@ export default async function MobileSidebar({
   const { t } = await useTranslation();
   return (
     <aside className="w-full overflow-x-auto">
-      <ul className="flex justify-between space-x-2 border-b-black px-5 py-2 pt-5">
+      <ul className="flex justify-between gap-1 px-3 py-2">
         {items(t).map((item) => (
           <MobileSidebarItem
             key={item.name}

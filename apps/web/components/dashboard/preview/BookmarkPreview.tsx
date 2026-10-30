@@ -284,7 +284,7 @@ export default function BookmarkPreview({
         <div className="flex items-center gap-1">
           <button
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-            className={`${styles.iconButton} hidden lg:inline-flex`}
+            className={`${styles.iconButton} ${styles.desktopOnly}`}
             aria-label={sidebarCollapsed ? "展开详情" : "收起详情"}
             title={sidebarCollapsed ? "展开详情" : "收起详情"}
             aria-expanded={!sidebarCollapsed}

@@ -65,12 +65,13 @@ function BottomRow({
   bookmark: ZBookmark;
 }) {
   return (
-    <div className="justify flex w-full shrink-0 justify-between text-muted-foreground">
-      <div className="flex items-center gap-2 overflow-hidden text-nowrap text-xs">
+    <div className="flex w-full shrink-0 items-center justify-between gap-2 text-muted-foreground">
+      <div className="flex min-w-0 items-center gap-2 overflow-hidden text-nowrap text-xs">
         {footer && <>{footer}•</>}
         <Link
           href={`/dashboard/preview/${bookmark.id}`}
           suppressHydrationWarning
+          className="shrink-0"
         >
           <BookmarkFormattedCreatedAt createdAt={bookmark.createdAt} />
         </Link>
@@ -241,7 +242,7 @@ function HoverActionBar({
   return (
     <div
       className={cn(
-        "z-[60] gap-1 rounded bg-white/50 p-1 backdrop-blur-sm transition-opacity duration-200 dark:bg-black/50",
+        "z-[60] gap-1 rounded-full border border-border/70 bg-card/95 p-1 shadow-sm backdrop-blur-sm transition-opacity duration-200",
         inline ? "shrink-0" : "absolute right-2 top-2",
         isBulkEditEnabled
           ? "pointer-events-auto flex opacity-100"
@@ -251,7 +252,7 @@ function HoverActionBar({
       <button
         aria-label={t("actions.bulk_edit")}
         title={t("actions.bulk_edit")}
-        className="rounded p-0.5 hover:bg-background/50"
+        className="flex size-8 items-center justify-center rounded-full hover:bg-accent"
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -276,7 +277,7 @@ function HoverActionBar({
                 ? t("actions.unfavorite")
                 : t("actions.favorite")
             }
-            className="rounded p-0.5 hover:bg-background/50"
+            className="flex size-8 items-center justify-center rounded-full hover:bg-accent"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -292,7 +293,7 @@ function HoverActionBar({
             title={
               bookmark.archived ? t("actions.unarchive") : t("actions.archive")
             }
-            className="rounded p-0.5 hover:bg-background/50"
+            className="flex size-8 items-center justify-center rounded-full hover:bg-accent"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();

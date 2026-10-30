@@ -103,6 +103,7 @@ function DroppableListSidebarItem({
   selectedListId: string | null;
   setSelectedListId: (id: string | null) => void;
 }) {
+  const { t } = useTranslation();
   const canDrop =
     node.item.type === "manual" &&
     (node.item.userRole === "owner" || node.item.userRole === "editor");
@@ -114,9 +115,7 @@ function DroppableListSidebarItem({
       collapseButton={
         node.children.length > 0 ? (
           <CollapsibleTriggerChevron className="size-4" open={open} />
-        ) : (
-          <span className="size-4" />
-        )
+        ) : undefined
       }
       logo={
         <span className="flex">
@@ -137,16 +136,21 @@ function DroppableListSidebarItem({
           }}
           list={node.item}
         >
-          <Button size="none" variant="ghost" className="relative">
+          <Button
+            size="none"
+            variant="ghost"
+            className="relative mr-1 size-8 shrink-0 rounded-full"
+            aria-label={`${node.item.name} · ${t("actions.more")}`}
+          >
             <MoreHorizontal
               className={cn(
-                "absolute inset-0 m-auto size-4 opacity-0 transition-opacity duration-100 group-hover:opacity-100",
+                "absolute inset-0 m-auto size-4 opacity-0 transition-opacity duration-100 group-focus-within:opacity-100 group-hover:opacity-100",
                 selectedListId == node.item.id ? "opacity-100" : "opacity-0",
               )}
             />
             <span
               className={cn(
-                "px-2.5 text-xs font-light text-muted-foreground opacity-100 transition-opacity duration-100 group-hover:opacity-0",
+                "text-xs tabular-nums text-muted-foreground opacity-100 transition-opacity duration-100 group-focus-within:opacity-0 group-hover:opacity-0",
                 selectedListId == node.item.id || numBookmarks === undefined
                   ? "opacity-0"
                   : "opacity-100",
@@ -157,7 +161,6 @@ function DroppableListSidebarItem({
           </Button>
         </ListOptions>
       }
-      linkClassName="py-0.5 px-1"
       style={{ marginLeft: `${level * 1}rem` }}
       dropHighlight={canDrop && dropHighlight}
       onDragOver={canDrop ? onDragOver : undefined}
@@ -213,34 +216,31 @@ export default function AllLists({
   }, [isViewingSharedList, sharedListsOpen]);
 
   return (
-    <ul className="sidebar-scrollbar max-h-full gap-y-2 overflow-auto text-sm">
-      <li className="flex justify-between pb-3">
+    <ul className="sidebar-scrollbar min-h-0 overflow-auto text-sm">
+      <li className="mb-2 flex min-h-8 items-center justify-between">
         <p className="pl-2 text-xs uppercase tracking-wider text-muted-foreground">
           {t("search.lists")}
         </p>
         <EditListModal>
-          <button type="button" aria-label={t("lists.new_list")}>
-            <Plus
-              className="mr-2 size-4 text-muted-foreground"
-              strokeWidth={1.5}
-            />
+          <button
+            type="button"
+            aria-label={t("lists.new_list")}
+            className="mr-1 flex size-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          >
+            <Plus className="size-4" strokeWidth={1.5} />
           </button>
         </EditListModal>
       </li>
       <SidebarItem
-        collapseButton={<span className="size-4" />}
         logo={<KeeplyListIcon kind="all" variant="sidebar" />}
         name={t("lists.all_lists")}
         path={`/dashboard/lists`}
-        linkClassName="py-0.5 px-1"
         right={<InvitationNotificationBadge />}
       />
       <SidebarItem
-        collapseButton={<span className="size-4" />}
         logo={<KeeplyListIcon kind="favourites" variant="sidebar" />}
         name={t("lists.favourites")}
         path={`/dashboard/favourites`}
-        linkClassName="py-0.5 px-1"
       />
 
       {/* Owned Lists */}
@@ -273,7 +273,6 @@ export default function AllLists({
             logo={<KeeplyListIcon kind="shared" variant="sidebar" />}
             name={t("lists.shared_lists")}
             path="#"
-            linkClassName="py-0.5 px-1"
           />
           <CollapsibleContent>
             <CollapsibleBookmarkLists

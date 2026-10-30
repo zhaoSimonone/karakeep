@@ -135,6 +135,9 @@
   }
 }
 @media (max-width: 1023px) {
+  .desktopOnly {
+    display: none;
+  }
   .shell {
     border-radius: 18px;
   }

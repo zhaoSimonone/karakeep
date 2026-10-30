@@ -17,20 +17,22 @@ export default async function ListsPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-        <div className="space-y-1">
-          <h1 className="flex items-center gap-3 text-2xl tracking-normal text-foreground">
-            <KeeplyListIcon kind="all" size="lg" />
-            <span>{t("lists.all_lists")}</span>
-          </h1>
-          <p className="text-md text-muted-foreground">
-            {t("lists.summary_list", { count: lists.lists.length })} ·{" "}
-            {t("lists.summary_bookmark", { count: stats.numBookmarks })}
-          </p>
+      <div className="flex flex-wrap items-center justify-between gap-5">
+        <div className="flex min-w-0 items-center gap-4">
+          <KeeplyListIcon kind="all" size="lg" />
+          <div className="space-y-1">
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+              {t("lists.all_lists")}
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              {t("lists.summary_list", { count: lists.lists.length })} ·{" "}
+              {t("lists.summary_bookmark", { count: stats.numBookmarks })}
+            </p>
+          </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <EditListModal>
-            <Button className="h-11 gap-2 rounded-lg">
+            <Button className="h-11 gap-2 rounded-full px-5 font-semibold shadow-sm">
               <Plus className="size-4" />
               <span>{t("lists.new_list")}</span>
             </Button>

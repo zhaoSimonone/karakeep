@@ -38,7 +38,7 @@ export default function SidebarItem({
   return (
     <li
       className={cn(
-        "relative flex justify-between rounded-2xl text-sm transition-colors hover:bg-accent",
+        "relative mb-1 flex min-h-10 items-center justify-between rounded-2xl text-sm transition-colors hover:bg-accent",
         path == currentPath
           ? "bg-accent font-semibold text-accent-foreground"
           : "text-muted-foreground",
@@ -51,18 +51,24 @@ export default function SidebarItem({
       onDragEnter={onDragEnter}
       onDragLeave={onDragLeave}
     >
-      <div className="flex flex-1 items-center">
-        {collapseButton}
+      <div className="flex min-w-0 flex-1 items-center">
+        {collapseButton && (
+          <span className="absolute inset-y-0 left-0 flex w-3 items-center justify-center">
+            {collapseButton}
+          </span>
+        )}
         <Link
           href={path}
           aria-current={path === currentPath ? "page" : undefined}
           className={cn(
-            "flex flex-1 items-center gap-x-3 rounded-[inherit] px-3 py-2.5",
+            "flex min-h-10 min-w-0 flex-1 items-center gap-x-3 rounded-[inherit] px-3 py-2.5",
             linkClassName,
           )}
         >
-          {logo}
-          <span title={name} className="line-clamp-1 break-all">
+          <span className="flex size-[18px] shrink-0 items-center justify-center">
+            {logo}
+          </span>
+          <span title={name} className="truncate">
             {name}
           </span>
         </Link>

@@ -18,8 +18,10 @@ export default function MobileSidebarItem({
   return (
     <li
       className={cn(
-        "flex w-full rounded-lg hover:bg-background",
-        path == currentPath ? "bg-accent" : "",
+        "flex min-w-0 flex-1 rounded-2xl transition-colors hover:bg-accent",
+        path == currentPath
+          ? "bg-accent font-semibold text-accent-foreground"
+          : "text-muted-foreground",
       )}
     >
       <Link
@@ -27,9 +29,14 @@ export default function MobileSidebarItem({
         aria-current={path === currentPath ? "page" : undefined}
         onClick={haptic}
         href={path}
-        className="m-auto px-3 py-3"
+        className="flex min-h-12 w-full flex-col items-center justify-center gap-1 rounded-[inherit] px-1 py-2"
       >
-        {logo}
+        <span className="flex size-[18px] items-center justify-center">
+          {logo}
+        </span>
+        <span className="max-w-full truncate text-[10px] leading-4">
+          {name}
+        </span>
       </Link>
     </li>
   );

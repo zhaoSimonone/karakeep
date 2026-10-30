@@ -1265,6 +1265,11 @@
     "focus_search_alt": "Focus search"
   },
   "keeply_ui": {
+    "list_icon": "Choose list icon",
+    "clear_parent": "Clear parent list",
+    "pinned_lists": "Quick access",
+    "favorites_description": "Keep your favorites close at hand.",
+    "archive_description": "Finished reading, kept for later.",
     "title": "Your collection",
     "subtitle": "A little space for everything worth keeping.",
     "add": "Add something good",
